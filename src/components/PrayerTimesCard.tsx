@@ -1,5 +1,6 @@
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
-import { Clock, MapPin, Sun, Sunrise, Moon } from 'lucide-react';
+import { Clock, MapPin, Sun, Sunrise, Moon, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface PrayerTimesCardProps {
@@ -17,7 +18,7 @@ const prayerIcons: Record<string, React.ComponentType<{ className?: string }>> =
 };
 
 export function PrayerTimesCard({ compact = false, className }: PrayerTimesCardProps) {
-  const { prayerTimes, location, loading, nextPrayer } = usePrayerTimes();
+  const { prayerTimes, prayerDetails, locationName, loading, nextPrayer, refreshLocation } = usePrayerTimes();
 
   if (loading) {
     return (
@@ -36,11 +37,14 @@ export function PrayerTimesCard({ compact = false, className }: PrayerTimesCardP
     return (
       <div className={cn('bg-card border border-border rounded-xl p-6', className)}>
         <p className="text-muted-foreground text-center">Unable to load prayer times</p>
+        <Button variant="outline" size="sm" onClick={refreshLocation} className="w-full mt-4 gap-2">
+          <RefreshCw className="w-4 h-4" /> Retry
+        </Button>
       </div>
     );
   }
 
-  const prayers = [
+  const prayers = prayerDetails.length > 0 ? prayerDetails : [
     { name: 'Fajr', time: prayerTimes.Fajr },
     { name: 'Sunrise', time: prayerTimes.Sunrise },
     { name: 'Dhuhr', time: prayerTimes.Dhuhr },
@@ -55,7 +59,7 @@ export function PrayerTimesCard({ compact = false, className }: PrayerTimesCardP
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-primary" />
-            <span className="font-medium text-foreground">Prayer Times</span>
+            <span className="font-medium text-foreground text-sm">Prayer Times</span>
           </div>
           {nextPrayer && (
             <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
@@ -63,9 +67,15 @@ export function PrayerTimesCard({ compact = false, className }: PrayerTimesCardP
             </span>
           )}
         </div>
+        
+        {locationName && (
+          <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+            <MapPin className="w-3 h-3" /> {locationName}
+          </p>
+        )}
+        
         <div className="grid grid-cols-3 gap-2">
-          {prayers.slice(0, 6).map((prayer) => {
-            const Icon = prayerIcons[prayer.name] || Sun;
+          {prayers.filter(p => p.name !== 'Sunrise').slice(0, 5).map((prayer) => {
             const isNext = nextPrayer?.name === prayer.name;
             return (
               <div
@@ -75,8 +85,8 @@ export function PrayerTimesCard({ compact = false, className }: PrayerTimesCardP
                   isNext ? 'bg-primary/20' : 'bg-card/50'
                 )}
               >
-                <p className="text-xs text-muted-foreground">{prayer.name}</p>
-                <p className={cn('text-sm font-medium', isNext ? 'text-primary' : 'text-foreground')}>
+                <p className="text-[10px] text-muted-foreground">{prayer.name}</p>
+                <p className={cn('text-xs font-medium', isNext ? 'text-primary' : 'text-foreground')}>
                   {prayer.time}
                 </p>
               </div>
@@ -90,19 +100,24 @@ export function PrayerTimesCard({ compact = false, className }: PrayerTimesCardP
   return (
     <div className={cn('bg-card border border-border rounded-xl overflow-hidden', className)}>
       {/* Header */}
-      <div className="bg-gradient-to-br from-primary/20 to-accent/10 p-6 border-b border-border">
+      <div className="bg-gradient-to-br from-primary/20 to-accent/10 p-4 md:p-6 border-b border-border">
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-semibold text-foreground flex items-center gap-2">
             <Clock className="w-5 h-5 text-primary" />
             Prayer Times
           </h3>
-          {location && (
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <MapPin className="w-3 h-3" />
-              {location.city || 'Your Location'}
-            </span>
-          )}
+          <Button variant="ghost" size="icon" onClick={refreshLocation} className="h-8 w-8">
+            <RefreshCw className="w-4 h-4" />
+          </Button>
         </div>
+        
+        {/* Location */}
+        {locationName && (
+          <p className="text-sm text-muted-foreground flex items-center gap-1 mb-3">
+            <MapPin className="w-3 h-3" />
+            {locationName}
+          </p>
+        )}
         
         {/* Hijri Date */}
         {prayerTimes.date?.hijri && (
@@ -148,11 +163,18 @@ export function PrayerTimesCard({ compact = false, className }: PrayerTimesCardP
                   )}>
                     <Icon className={cn('w-4 h-4', isNext ? 'text-primary' : 'text-muted-foreground')} />
                   </div>
-                  <span className={cn('font-medium', isNext ? 'text-primary' : 'text-foreground')}>
-                    {prayer.name}
-                  </span>
+                  <div>
+                    <span className={cn('font-medium', isNext ? 'text-primary' : 'text-foreground')}>
+                      {prayer.name}
+                    </span>
+                    {prayer.endTime && (
+                      <p className="text-xs text-muted-foreground">
+                        ends at {prayer.endTime}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <span className={cn('font-mono', isNext ? 'text-primary font-semibold' : 'text-foreground')}>
+                <span className={cn('font-mono text-sm', isNext ? 'text-primary font-semibold' : 'text-foreground')}>
                   {prayer.time}
                 </span>
               </div>

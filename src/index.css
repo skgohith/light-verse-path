@@ -84,6 +84,33 @@
     --sidebar-border: 220 20% 18%;
     --sidebar-ring: 150 55% 45%;
   }
+
+  /* Emerald Theme */
+  .dark.theme-emerald {
+    --primary: 160 60% 40%;
+    --accent: 160 60% 40%;
+    --ring: 160 60% 40%;
+    --sidebar-primary: 160 60% 40%;
+    --sidebar-ring: 160 60% 40%;
+  }
+
+  /* Ocean Blue Theme */
+  .dark.theme-ocean {
+    --primary: 210 60% 50%;
+    --accent: 210 60% 50%;
+    --ring: 210 60% 50%;
+    --sidebar-primary: 210 60% 50%;
+    --sidebar-ring: 210 60% 50%;
+  }
+
+  /* Sunset Gold Theme */
+  .dark.theme-sunset {
+    --primary: 35 80% 50%;
+    --accent: 35 80% 50%;
+    --ring: 35 80% 50%;
+    --sidebar-primary: 35 80% 50%;
+    --sidebar-ring: 35 80% 50%;
+  }
 }
 
 @layer base {

@@ -6,12 +6,12 @@ const footerLinks = {
     { label: 'Home', path: '/' },
     { label: 'Read Quran', path: '/read' },
     { label: 'Learn', path: '/learn' },
-    { label: 'Community', path: '/community' },
+    { label: 'Hadith', path: '/hadith' },
   ],
   resources: [
     { label: 'Audio Recitations', path: '/read' },
-    { label: 'Translations', path: '/read' },
-    { label: 'Reading Plans', path: '/learn' },
+    { label: 'Prayer Times', path: '/tools' },
+    { label: 'Tasbeeh Counter', path: '/tasbeeh' },
     { label: 'Bookmarks', path: '/bookmarks' },
   ],
   about: [

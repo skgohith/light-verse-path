@@ -66,3 +66,65 @@ export interface Topic {
   icon: string;
   articleCount: number;
 }
+
+export interface PrayerTimes {
+  Fajr: string;
+  Sunrise: string;
+  Dhuhr: string;
+  Asr: string;
+  Maghrib: string;
+  Isha: string;
+  date: {
+    readable: string;
+    hijri: {
+      date: string;
+      day: string;
+      month: { en: string; ar: string };
+      year: string;
+    };
+  };
+}
+
+export interface Tafsir {
+  id: string;
+  name: string;
+  author: string;
+  language: string;
+}
+
+export interface TafsirText {
+  text: string;
+  surah: number;
+  ayah: number;
+}
+
+export interface NameOfAllah {
+  id: number;
+  name: string;
+  transliteration: string;
+  meaning: string;
+  description?: string;
+}
+
+export interface Dua {
+  id: string;
+  title: string;
+  arabic: string;
+  transliteration: string;
+  translation: string;
+  reference: string;
+  category: string;
+}
+
+export interface IslamicEvent {
+  name: string;
+  date: string;
+  hijriDate: string;
+  description: string;
+}
+
+export interface QiblaDirection {
+  latitude: number;
+  longitude: number;
+  direction: number;
+}

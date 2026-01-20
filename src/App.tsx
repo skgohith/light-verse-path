@@ -9,6 +9,7 @@ import SurahDetail from "./pages/SurahDetail";
 import Learn from "./pages/Learn";
 import Community from "./pages/Community";
 import Bookmarks from "./pages/Bookmarks";
+import PrayerTimes from "./pages/PrayerTimes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,7 +28,8 @@ const App = () => (
             <Route path="/learn" element={<Learn />} />
             <Route path="/community" element={<Community />} />
             <Route path="/bookmarks" element={<Bookmarks />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="/prayer-times" element={<PrayerTimes />} />
+            <Route path="/tools" element={<PrayerTimes />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

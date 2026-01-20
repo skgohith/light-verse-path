@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
+  <rect width="180" height="180" fill="#1a1f2e"/>
+  <circle cx="90" cy="70" r="30" fill="#3d9970" opacity="0.3"/>
+  <path d="M90 45 L97 65 L120 65 L101 80 L108 100 L90 85 L72 100 L79 80 L60 65 L83 65 Z" fill="#3d9970"/>
+  <text x="90" y="140" text-anchor="middle" fill="#3d9970" font-family="serif" font-size="20" font-weight="bold">القرآن</text>
+</svg>

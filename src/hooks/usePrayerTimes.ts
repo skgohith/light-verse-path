@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { PrayerTimes } from '@/types/quran';
+import { PrayerTimes as PrayerTimesType } from '@/types/quran';
 
 interface Location {
   latitude: number;
@@ -8,17 +8,24 @@ interface Location {
   country?: string;
 }
 
+interface PrayerTimeDetail {
+  name: string;
+  time: string;
+  endTime?: string;
+}
+
 export function usePrayerTimes() {
-  const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
+  const [prayerTimes, setPrayerTimes] = useState<PrayerTimesType | null>(null);
+  const [prayerDetails, setPrayerDetails] = useState<PrayerTimeDetail[]>([]);
   const [location, setLocation] = useState<Location | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nextPrayer, setNextPrayer] = useState<{ name: string; time: string; remaining: string } | null>(null);
+  const [locationName, setLocationName] = useState<string>('');
 
   useEffect(() => {
     async function getLocation() {
       try {
-        // Try to get user's location
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             async (position) => {
@@ -28,18 +35,20 @@ export function usePrayerTimes() {
               };
               setLocation(loc);
               await fetchPrayerTimes(loc.latitude, loc.longitude);
+              await fetchLocationName(loc.latitude, loc.longitude);
             },
             async () => {
               // Default to Mecca if location denied
               const defaultLoc = { latitude: 21.4225, longitude: 39.8262, city: 'Mecca', country: 'Saudi Arabia' };
               setLocation(defaultLoc);
+              setLocationName('Mecca, Saudi Arabia');
               await fetchPrayerTimes(defaultLoc.latitude, defaultLoc.longitude);
             }
           );
         } else {
-          // Default to Mecca
           const defaultLoc = { latitude: 21.4225, longitude: 39.8262, city: 'Mecca', country: 'Saudi Arabia' };
           setLocation(defaultLoc);
+          setLocationName('Mecca, Saudi Arabia');
           await fetchPrayerTimes(defaultLoc.latitude, defaultLoc.longitude);
         }
       } catch (err) {
@@ -50,6 +59,20 @@ export function usePrayerTimes() {
 
     getLocation();
   }, []);
+
+  async function fetchLocationName(lat: number, lng: number) {
+    try {
+      const response = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+      );
+      const data = await response.json();
+      const city = data.city || data.locality || data.principalSubdivision;
+      const country = data.countryName;
+      setLocationName(city ? `${city}, ${country}` : country || 'Unknown Location');
+    } catch {
+      setLocationName('Your Location');
+    }
+  }
 
   async function fetchPrayerTimes(lat: number, lng: number) {
     try {
@@ -62,21 +85,33 @@ export function usePrayerTimes() {
       const data = await response.json();
       
       if (data.code === 200) {
+        const timings = data.data.timings;
+        
         setPrayerTimes({
-          Fajr: data.data.timings.Fajr,
-          Sunrise: data.data.timings.Sunrise,
-          Dhuhr: data.data.timings.Dhuhr,
-          Asr: data.data.timings.Asr,
-          Maghrib: data.data.timings.Maghrib,
-          Isha: data.data.timings.Isha,
+          Fajr: timings.Fajr.split(' ')[0],
+          Sunrise: timings.Sunrise.split(' ')[0],
+          Dhuhr: timings.Dhuhr.split(' ')[0],
+          Asr: timings.Asr.split(' ')[0],
+          Maghrib: timings.Maghrib.split(' ')[0],
+          Isha: timings.Isha.split(' ')[0],
           date: {
             readable: data.data.date.readable,
             hijri: data.data.date.hijri
           }
         });
+
+        // Calculate prayer windows (start and end times)
+        const details: PrayerTimeDetail[] = [
+          { name: 'Fajr', time: timings.Fajr.split(' ')[0], endTime: timings.Sunrise.split(' ')[0] },
+          { name: 'Sunrise', time: timings.Sunrise.split(' ')[0] },
+          { name: 'Dhuhr', time: timings.Dhuhr.split(' ')[0], endTime: timings.Asr.split(' ')[0] },
+          { name: 'Asr', time: timings.Asr.split(' ')[0], endTime: timings.Maghrib.split(' ')[0] },
+          { name: 'Maghrib', time: timings.Maghrib.split(' ')[0], endTime: timings.Isha.split(' ')[0] },
+          { name: 'Isha', time: timings.Isha.split(' ')[0], endTime: timings.Midnight?.split(' ')[0] },
+        ];
+        setPrayerDetails(details);
         
-        // Calculate next prayer
-        calculateNextPrayer(data.data.timings);
+        calculateNextPrayer(timings);
       }
     } catch (err) {
       setError('Failed to fetch prayer times');
@@ -91,7 +126,10 @@ export function usePrayerTimes() {
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
     for (const prayer of prayers) {
-      const [hours, minutes] = timings[prayer].split(':').map(Number);
+      const timeStr = timings[prayer]?.split(' ')[0] || timings[prayer];
+      if (!timeStr) continue;
+      
+      const [hours, minutes] = timeStr.split(':').map(Number);
       const prayerMinutes = hours * 60 + minutes;
 
       if (prayerMinutes > currentMinutes) {
@@ -101,7 +139,7 @@ export function usePrayerTimes() {
         
         setNextPrayer({
           name: prayer,
-          time: timings[prayer],
+          time: timeStr,
           remaining: remainingHours > 0 
             ? `${remainingHours}h ${remainingMins}m` 
             : `${remainingMins}m`
@@ -111,9 +149,10 @@ export function usePrayerTimes() {
     }
 
     // If all prayers passed, next is Fajr tomorrow
+    const fajrTime = timings.Fajr?.split(' ')[0] || timings.Fajr;
     setNextPrayer({
       name: 'Fajr',
-      time: timings.Fajr,
+      time: fajrTime,
       remaining: 'Tomorrow'
     });
   }
@@ -137,7 +176,35 @@ export function usePrayerTimes() {
     return () => clearInterval(interval);
   }, [prayerTimes]);
 
-  return { prayerTimes, location, loading, error, nextPrayer };
+  // Refresh location periodically
+  const refreshLocation = () => {
+    setLoading(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const loc = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          };
+          setLocation(loc);
+          await fetchPrayerTimes(loc.latitude, loc.longitude);
+          await fetchLocationName(loc.latitude, loc.longitude);
+        },
+        () => setLoading(false)
+      );
+    }
+  };
+
+  return { 
+    prayerTimes, 
+    prayerDetails,
+    location, 
+    locationName,
+    loading, 
+    error, 
+    nextPrayer,
+    refreshLocation 
+  };
 }
 
 export function useQiblaDirection() {

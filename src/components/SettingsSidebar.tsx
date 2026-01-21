@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme, THEMES } from '@/hooks/useTheme';
 import { usePrayerNotifications } from '@/hooks/usePrayerNotifications';
+import { useDailyVerseNotification } from '@/hooks/useDailyVerseNotification';
 import { useOfflineQuran } from '@/hooks/useOfflineQuran';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -12,8 +13,9 @@ import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Settings, User, LogOut, Bell, Palette, Download, Wifi, WifiOff,
-  BookOpen, Star, Clock, Bookmark, TrendingUp, ChevronRight
+  BookOpen, Star, Clock, Bookmark, TrendingUp, ChevronRight, Send
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -46,6 +48,14 @@ export function SettingsSidebar() {
     downloadForOffline,
     offlineData 
   } = useOfflineQuran();
+
+  const {
+    settings: verseSettings,
+    toggleNotifications: toggleVerseNotifications,
+    setScheduledTime,
+    sendVerseNotification,
+    supported: verseNotifSupported
+  } = useDailyVerseNotification();
 
   const handleSignOut = async () => {
     await signOut();
@@ -195,6 +205,54 @@ export function SettingsSidebar() {
                       ))}
                     </div>
                   </>
+                )}
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Notifications not supported on this device
+              </p>
+            )}
+          </div>
+
+          <Separator />
+
+          {/* Daily Verse Notification */}
+          <div className="space-y-3">
+            <p className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-2">
+              <Send className="w-4 h-4" /> Daily Verse
+            </p>
+            
+            {verseNotifSupported ? (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Enable Daily Verse</span>
+                  <Switch
+                    checked={verseSettings.enabled}
+                    onCheckedChange={toggleVerseNotifications}
+                  />
+                </div>
+
+                {verseSettings.enabled && (
+                  <div className="space-y-3">
+                    <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground">Time to receive verse:</p>
+                      <Input
+                        type="time"
+                        value={verseSettings.scheduledTime}
+                        onChange={(e) => setScheduledTime(e.target.value)}
+                        className="h-9"
+                      />
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={sendVerseNotification}
+                      className="w-full gap-2"
+                    >
+                      <Send className="w-4 h-4" />
+                      Send Test Verse
+                    </Button>
+                  </div>
                 )}
               </>
             ) : (

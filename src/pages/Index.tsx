@@ -10,6 +10,7 @@ import { PrayerTimesCard } from '@/components/PrayerTimesCard';
 import { ReadingStreakCard } from '@/components/ReadingStreakCard';
 import { LearningPlanCard } from '@/components/LearningPlanCard';
 import { QuickWidgets } from '@/components/QuickWidgets';
+import { ProgressDashboard } from '@/components/ProgressDashboard';
 import { useSurahs } from '@/hooks/useQuranApi';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -83,9 +84,10 @@ export default function Index() {
         <section className="py-6 md:py-8 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-              {/* Sidebar */}
-              <div className="space-y-4 md:space-y-6">
+              {/* Sidebar - Mobile optimized */}
+              <div className="space-y-4 md:space-y-6 order-first lg:order-none">
                 <QuickWidgets />
+                <ProgressDashboard />
                 <ReadingStreakCard compact />
                 <PrayerTimesCard compact />
                 <ContinueReading />

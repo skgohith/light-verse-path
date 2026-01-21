@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTheme, THEMES } from '@/hooks/useTheme';
 import { usePrayerNotifications } from '@/hooks/usePrayerNotifications';
 import { useDailyVerseNotification } from '@/hooks/useDailyVerseNotification';
+import { useExpandedNotifications } from '@/hooks/useExpandedNotifications';
 import { useOfflineQuran } from '@/hooks/useOfflineQuran';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -13,7 +14,8 @@ import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Settings, User, LogOut, Bell, Palette, Download, Wifi, WifiOff,
-  BookOpen, Star, Clock, Bookmark, TrendingUp, ChevronRight, Send
+  BookOpen, Star, Clock, Bookmark, TrendingUp, ChevronRight, Send,
+  Sunrise, Moon, Target
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -56,6 +58,21 @@ export function SettingsSidebar() {
     sendVerseNotification,
     supported: verseNotifSupported
   } = useDailyVerseNotification();
+
+  const {
+    settings: expandedSettings,
+    toggleMorningAzkar,
+    toggleEveningAzkar,
+    setMorningTime,
+    setEveningTime,
+    toggleReadingGoal,
+    setDailyGoal,
+    setReadingReminderTime,
+    sendMorningAzkar,
+    sendEveningAzkar,
+    sendReadingReminder,
+    supported: expandedNotifSupported
+  } = useExpandedNotifications();
 
   const handleSignOut = async () => {
     await signOut();
@@ -263,6 +280,120 @@ export function SettingsSidebar() {
           </div>
 
           <Separator />
+
+          {/* Expanded Notifications - Azkar & Reading Goals */}
+          {expandedNotifSupported && (
+            <>
+              <div className="space-y-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-2">
+                  <Sunrise className="w-4 h-4" /> Morning & Evening Azkar
+                </p>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Sunrise className="w-4 h-4 text-amber-500" />
+                      <span className="text-sm">Morning Azkar</span>
+                    </div>
+                    <Switch
+                      checked={expandedSettings.azkar.morningEnabled}
+                      onCheckedChange={toggleMorningAzkar}
+                    />
+                  </div>
+                  {expandedSettings.azkar.morningEnabled && (
+                    <div className="pl-6 space-y-2">
+                      <Input
+                        type="time"
+                        value={expandedSettings.azkar.morningTime}
+                        onChange={(e) => setMorningTime(e.target.value)}
+                        className="h-8"
+                      />
+                      <Button variant="outline" size="sm" onClick={sendMorningAzkar} className="w-full text-xs">
+                        Test Morning Azkar
+                      </Button>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Moon className="w-4 h-4 text-indigo-500" />
+                      <span className="text-sm">Evening Azkar</span>
+                    </div>
+                    <Switch
+                      checked={expandedSettings.azkar.eveningEnabled}
+                      onCheckedChange={toggleEveningAzkar}
+                    />
+                  </div>
+                  {expandedSettings.azkar.eveningEnabled && (
+                    <div className="pl-6 space-y-2">
+                      <Input
+                        type="time"
+                        value={expandedSettings.azkar.eveningTime}
+                        onChange={(e) => setEveningTime(e.target.value)}
+                        className="h-8"
+                      />
+                      <Button variant="outline" size="sm" onClick={sendEveningAzkar} className="w-full text-xs">
+                        Test Evening Azkar
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-2">
+                  <Target className="w-4 h-4" /> Reading Goals
+                </p>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Daily Reading Reminder</span>
+                  <Switch
+                    checked={expandedSettings.readingGoal.enabled}
+                    onCheckedChange={toggleReadingGoal}
+                  />
+                </div>
+
+                {expandedSettings.readingGoal.enabled && (
+                  <div className="space-y-3">
+                    <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground">Daily goal (pages):</p>
+                      <Select 
+                        value={expandedSettings.readingGoal.dailyGoal.toString()} 
+                        onValueChange={(v) => setDailyGoal(parseInt(v))}
+                      >
+                        <SelectTrigger className="h-8">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1 page</SelectItem>
+                          <SelectItem value="3">3 pages</SelectItem>
+                          <SelectItem value="5">5 pages</SelectItem>
+                          <SelectItem value="10">10 pages</SelectItem>
+                          <SelectItem value="20">20 pages (1 Juz)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground">Reminder time:</p>
+                      <Input
+                        type="time"
+                        value={expandedSettings.readingGoal.reminderTime}
+                        onChange={(e) => setReadingReminderTime(e.target.value)}
+                        className="h-8"
+                      />
+                    </div>
+                    <Button variant="outline" size="sm" onClick={sendReadingReminder} className="w-full text-xs">
+                      Test Reading Reminder
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              <Separator />
+            </>
+          )}
 
           {/* Offline Reading */}
           <div className="space-y-3">

@@ -29,6 +29,36 @@ export default defineConfig(({ mode }) => ({
         orientation: "portrait",
         scope: "/",
         start_url: "/",
+        shortcuts: [
+          {
+            name: "Prayer Times",
+            short_name: "Prayer",
+            description: "View prayer times",
+            url: "/tools",
+            icons: [{ src: "pwa-192x192.png", sizes: "192x192" }]
+          },
+          {
+            name: "Tasbeeh Counter",
+            short_name: "Tasbeeh",
+            description: "Digital tasbeeh counter",
+            url: "/tasbeeh",
+            icons: [{ src: "pwa-192x192.png", sizes: "192x192" }]
+          },
+          {
+            name: "Read Quran",
+            short_name: "Quran",
+            description: "Continue reading Quran",
+            url: "/read",
+            icons: [{ src: "pwa-192x192.png", sizes: "192x192" }]
+          },
+          {
+            name: "Hadith",
+            short_name: "Hadith",
+            description: "Browse Hadith collections",
+            url: "/hadith",
+            icons: [{ src: "pwa-192x192.png", sizes: "192x192" }]
+          }
+        ],
         icons: [
           {
             src: "pwa-192x192.png",

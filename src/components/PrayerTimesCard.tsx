@@ -1,5 +1,5 @@
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
-import { Clock, MapPin, Sun, Sunrise, Moon, RefreshCw } from 'lucide-react';
+import { Clock, MapPin, Sun, Sunrise, Moon, RefreshCw, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -18,7 +18,7 @@ const prayerIcons: Record<string, React.ComponentType<{ className?: string }>> =
 };
 
 export function PrayerTimesCard({ compact = false, className }: PrayerTimesCardProps) {
-  const { prayerTimes, prayerDetails, locationName, loading, nextPrayer, refreshLocation } = usePrayerTimes();
+  const { prayerTimes, prayerDetails, locationName, loading, nextPrayer, makruhTimes, refreshLocation } = usePrayerTimes();
 
   if (loading) {
     return (
@@ -89,6 +89,11 @@ export function PrayerTimesCard({ compact = false, className }: PrayerTimesCardP
                 <p className={cn('text-xs font-medium', isNext ? 'text-primary' : 'text-foreground')}>
                   {prayer.time}
                 </p>
+                {prayer.endTime && (
+                  <p className="text-[9px] text-muted-foreground">
+                    → {prayer.endTime}
+                  </p>
+                )}
               </div>
             );
           })}
@@ -141,6 +146,32 @@ export function PrayerTimesCard({ compact = false, className }: PrayerTimesCardP
         )}
       </div>
 
+      {/* Makruh Times Warning */}
+      {makruhTimes && (
+        <div className="px-4 pt-4">
+          <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle className="w-4 h-4 text-amber-500" />
+              <span className="text-sm font-medium text-amber-500">Makruh (Disliked) Prayer Times</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-xs">
+              <div className="text-center p-2 bg-card/50 rounded">
+                <p className="text-muted-foreground">After Sunrise</p>
+                <p className="text-amber-500 font-medium">{makruhTimes.sunrise.start} - {makruhTimes.sunrise.end}</p>
+              </div>
+              <div className="text-center p-2 bg-card/50 rounded">
+                <p className="text-muted-foreground">Zawal</p>
+                <p className="text-amber-500 font-medium">{makruhTimes.zawal.start} - {makruhTimes.zawal.end}</p>
+              </div>
+              <div className="text-center p-2 bg-card/50 rounded">
+                <p className="text-muted-foreground">Before Maghrib</p>
+                <p className="text-amber-500 font-medium">{makruhTimes.sunset.start} - {makruhTimes.sunset.end}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Prayer Times List */}
       <div className="p-4">
         <div className="space-y-2">
@@ -169,14 +200,21 @@ export function PrayerTimesCard({ compact = false, className }: PrayerTimesCardP
                     </span>
                     {prayer.endTime && (
                       <p className="text-xs text-muted-foreground">
-                        ends at {prayer.endTime}
+                        Ends: {prayer.endTime}
                       </p>
                     )}
                   </div>
                 </div>
-                <span className={cn('font-mono text-sm', isNext ? 'text-primary font-semibold' : 'text-foreground')}>
-                  {prayer.time}
-                </span>
+                <div className="text-right">
+                  <span className={cn('font-mono text-sm block', isNext ? 'text-primary font-semibold' : 'text-foreground')}>
+                    {prayer.time}
+                  </span>
+                  {prayer.endTime && (
+                    <span className="text-xs text-muted-foreground">
+                      → {prayer.endTime}
+                    </span>
+                  )}
+                </div>
               </div>
             );
           })}

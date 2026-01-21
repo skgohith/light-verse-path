@@ -12,6 +12,9 @@ interface PrayerTimeDetail {
   name: string;
   time: string;
   endTime?: string;
+  isMakruh?: boolean;
+  makruhStart?: string;
+  makruhEnd?: string;
 }
 
 export function usePrayerTimes() {
@@ -22,7 +25,7 @@ export function usePrayerTimes() {
   const [error, setError] = useState<string | null>(null);
   const [nextPrayer, setNextPrayer] = useState<{ name: string; time: string; remaining: string } | null>(null);
   const [locationName, setLocationName] = useState<string>('');
-
+  const [makruhTimes, setMakruhTimes] = useState<{ sunrise: { start: string; end: string }; zawal: { start: string; end: string }; sunset: { start: string; end: string } } | null>(null);
   useEffect(() => {
     async function getLocation() {
       try {
@@ -87,12 +90,49 @@ export function usePrayerTimes() {
       if (data.code === 200) {
         const timings = data.data.timings;
         
+        const sunrise = timings.Sunrise.split(' ')[0];
+        const dhuhr = timings.Dhuhr.split(' ')[0];
+        const maghrib = timings.Maghrib.split(' ')[0];
+        
+        // Calculate Makruh times (approx 15-20 mins around sunrise, zawal, and sunset)
+        const calculateMakruhWindow = (time: string, minutesBefore: number, minutesAfter: number) => {
+          const [hours, mins] = time.split(':').map(Number);
+          const totalMins = hours * 60 + mins;
+          
+          const startMins = totalMins - minutesBefore;
+          const endMins = totalMins + minutesAfter;
+          
+          const formatTime = (m: number) => {
+            const h = Math.floor(m / 60) % 24;
+            const min = m % 60;
+            return `${h.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+          };
+          
+          return { start: formatTime(startMins), end: formatTime(endMins) };
+        };
+        
+        // Zawal is approximately 10 mins before Dhuhr
+        const zawalTime = (() => {
+          const [h, m] = dhuhr.split(':').map(Number);
+          const totalMins = h * 60 + m - 10;
+          const hours = Math.floor(totalMins / 60);
+          const mins = totalMins % 60;
+          return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+        })();
+        
+        const makruh = {
+          sunrise: calculateMakruhWindow(sunrise, 0, 20),
+          zawal: calculateMakruhWindow(zawalTime, 0, 15),
+          sunset: calculateMakruhWindow(maghrib, 20, 0)
+        };
+        setMakruhTimes(makruh);
+        
         setPrayerTimes({
           Fajr: timings.Fajr.split(' ')[0],
-          Sunrise: timings.Sunrise.split(' ')[0],
-          Dhuhr: timings.Dhuhr.split(' ')[0],
+          Sunrise: sunrise,
+          Dhuhr: dhuhr,
           Asr: timings.Asr.split(' ')[0],
-          Maghrib: timings.Maghrib.split(' ')[0],
+          Maghrib: maghrib,
           Isha: timings.Isha.split(' ')[0],
           date: {
             readable: data.data.date.readable,
@@ -100,14 +140,45 @@ export function usePrayerTimes() {
           }
         });
 
-        // Calculate prayer windows (start and end times)
+        // Calculate prayer windows (start and end times) with Makruh info
         const details: PrayerTimeDetail[] = [
-          { name: 'Fajr', time: timings.Fajr.split(' ')[0], endTime: timings.Sunrise.split(' ')[0] },
-          { name: 'Sunrise', time: timings.Sunrise.split(' ')[0] },
-          { name: 'Dhuhr', time: timings.Dhuhr.split(' ')[0], endTime: timings.Asr.split(' ')[0] },
-          { name: 'Asr', time: timings.Asr.split(' ')[0], endTime: timings.Maghrib.split(' ')[0] },
-          { name: 'Maghrib', time: timings.Maghrib.split(' ')[0], endTime: timings.Isha.split(' ')[0] },
-          { name: 'Isha', time: timings.Isha.split(' ')[0], endTime: timings.Midnight?.split(' ')[0] },
+          { 
+            name: 'Fajr', 
+            time: timings.Fajr.split(' ')[0], 
+            endTime: sunrise,
+            isMakruh: false 
+          },
+          { 
+            name: 'Sunrise', 
+            time: sunrise,
+            isMakruh: true,
+            makruhStart: makruh.sunrise.start,
+            makruhEnd: makruh.sunrise.end
+          },
+          { 
+            name: 'Dhuhr', 
+            time: dhuhr, 
+            endTime: timings.Asr.split(' ')[0],
+            isMakruh: false 
+          },
+          { 
+            name: 'Asr', 
+            time: timings.Asr.split(' ')[0], 
+            endTime: maghrib,
+            isMakruh: false 
+          },
+          { 
+            name: 'Maghrib', 
+            time: maghrib, 
+            endTime: timings.Isha.split(' ')[0],
+            isMakruh: false 
+          },
+          { 
+            name: 'Isha', 
+            time: timings.Isha.split(' ')[0], 
+            endTime: timings.Midnight?.split(' ')[0],
+            isMakruh: false 
+          },
         ];
         setPrayerDetails(details);
         
@@ -203,6 +274,7 @@ export function usePrayerTimes() {
     loading, 
     error, 
     nextPrayer,
+    makruhTimes,
     refreshLocation 
   };
 }

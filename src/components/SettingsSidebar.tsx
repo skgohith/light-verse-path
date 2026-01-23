@@ -6,6 +6,8 @@ import { usePrayerNotifications } from '@/hooks/usePrayerNotifications';
 import { useDailyVerseNotification } from '@/hooks/useDailyVerseNotification';
 import { useExpandedNotifications } from '@/hooks/useExpandedNotifications';
 import { useOfflineQuran } from '@/hooks/useOfflineQuran';
+import { usePrayerTimes } from '@/hooks/usePrayerTimes';
+import { CALCULATION_METHODS } from '@/hooks/usePrayerCalculationMethod';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -15,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { 
   Settings, User, LogOut, Bell, Palette, Download, Wifi, WifiOff,
   BookOpen, Star, Clock, Bookmark, TrendingUp, ChevronRight, Send,
-  Sunrise, Moon, Target
+  Sunrise, Moon, Target, Calculator
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -50,6 +52,11 @@ export function SettingsSidebar() {
     downloadForOffline,
     offlineData 
   } = useOfflineQuran();
+
+  const {
+    calculationMethod,
+    setCalculationMethod
+  } = usePrayerTimes();
 
   const {
     settings: verseSettings,
@@ -165,6 +172,33 @@ export function SettingsSidebar() {
                         style={{ backgroundColor: t.primary }}
                       />
                       {t.name}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Separator />
+
+          {/* Prayer Calculation Method */}
+          <div className="space-y-3">
+            <p className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-2">
+              <Calculator className="w-4 h-4" /> Calculation Method
+            </p>
+            <Select 
+              value={calculationMethod.toString()} 
+              onValueChange={(v) => setCalculationMethod(parseInt(v))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select method" />
+              </SelectTrigger>
+              <SelectContent className="max-h-64">
+                {CALCULATION_METHODS.map((m) => (
+                  <SelectItem key={m.id} value={m.id.toString()}>
+                    <div className="flex flex-col">
+                      <span className="text-sm">{m.name}</span>
+                      <span className="text-xs text-muted-foreground">{m.description}</span>
                     </div>
                   </SelectItem>
                 ))}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PrayerTimes as PrayerTimesType } from '@/types/quran';
+import { useLocalStorage } from './useLocalStorage';
 
 interface Location {
   latitude: number;
@@ -26,6 +27,12 @@ export function usePrayerTimes() {
   const [nextPrayer, setNextPrayer] = useState<{ name: string; time: string; remaining: string } | null>(null);
   const [locationName, setLocationName] = useState<string>('');
   const [makruhTimes, setMakruhTimes] = useState<{ sunrise: { start: string; end: string }; zawal: { start: string; end: string }; sunset: { start: string; end: string } } | null>(null);
+  const [calculationMethod, setCalculationMethodStorage] = useLocalStorage<number>('prayer-calculation-method', 2);
+  
+  const setCalculationMethod = (method: number) => {
+    setCalculationMethodStorage(method);
+  };
+  
   useEffect(() => {
     async function getLocation() {
       try {
@@ -37,7 +44,7 @@ export function usePrayerTimes() {
                 longitude: position.coords.longitude
               };
               setLocation(loc);
-              await fetchPrayerTimes(loc.latitude, loc.longitude);
+              await fetchPrayerTimes(loc.latitude, loc.longitude, calculationMethod);
               await fetchLocationName(loc.latitude, loc.longitude);
             },
             async () => {
@@ -45,14 +52,14 @@ export function usePrayerTimes() {
               const defaultLoc = { latitude: 21.4225, longitude: 39.8262, city: 'Mecca', country: 'Saudi Arabia' };
               setLocation(defaultLoc);
               setLocationName('Mecca, Saudi Arabia');
-              await fetchPrayerTimes(defaultLoc.latitude, defaultLoc.longitude);
+              await fetchPrayerTimes(defaultLoc.latitude, defaultLoc.longitude, calculationMethod);
             }
           );
         } else {
           const defaultLoc = { latitude: 21.4225, longitude: 39.8262, city: 'Mecca', country: 'Saudi Arabia' };
           setLocation(defaultLoc);
           setLocationName('Mecca, Saudi Arabia');
-          await fetchPrayerTimes(defaultLoc.latitude, defaultLoc.longitude);
+          await fetchPrayerTimes(defaultLoc.latitude, defaultLoc.longitude, calculationMethod);
         }
       } catch (err) {
         setError('Failed to get location');
@@ -61,7 +68,7 @@ export function usePrayerTimes() {
     }
 
     getLocation();
-  }, []);
+  }, [calculationMethod]);
 
   async function fetchLocationName(lat: number, lng: number) {
     try {
@@ -77,13 +84,13 @@ export function usePrayerTimes() {
     }
   }
 
-  async function fetchPrayerTimes(lat: number, lng: number) {
+  async function fetchPrayerTimes(lat: number, lng: number, method: number = 2) {
     try {
       const today = new Date();
       const dateStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
       
       const response = await fetch(
-        `https://api.aladhan.com/v1/timings/${dateStr}?latitude=${lat}&longitude=${lng}&method=2`
+        `https://api.aladhan.com/v1/timings/${dateStr}?latitude=${lat}&longitude=${lng}&method=${method}`
       );
       const data = await response.json();
       
@@ -258,7 +265,7 @@ export function usePrayerTimes() {
             longitude: position.coords.longitude
           };
           setLocation(loc);
-          await fetchPrayerTimes(loc.latitude, loc.longitude);
+          await fetchPrayerTimes(loc.latitude, loc.longitude, calculationMethod);
           await fetchLocationName(loc.latitude, loc.longitude);
         },
         () => setLoading(false)
@@ -275,6 +282,8 @@ export function usePrayerTimes() {
     error, 
     nextPrayer,
     makruhTimes,
+    calculationMethod,
+    setCalculationMethod,
     refreshLocation 
   };
 }

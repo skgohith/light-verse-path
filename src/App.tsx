@@ -18,6 +18,7 @@ import Profile from "./pages/Profile";
 import Tasbeeh from "./pages/Tasbeeh";
 import Memorization from "./pages/Memorization";
 import Hadith from "./pages/Hadith";
+import Azkar from "./pages/Azkar";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => {
                   <Route path="/memorization" element={<Memorization />} />
                   <Route path="/hadith" element={<Hadith />} />
                   <Route path="/hadith/:bookId" element={<Hadith />} />
+                  <Route path="/azkar" element={<Azkar />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>

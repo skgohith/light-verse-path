@@ -11,6 +11,8 @@ import { ReadingStreakCard } from '@/components/ReadingStreakCard';
 import { LearningPlanCard } from '@/components/LearningPlanCard';
 import { QuickWidgets } from '@/components/QuickWidgets';
 import { ProgressDashboard } from '@/components/ProgressDashboard';
+import { AnalyticsDashboard } from '@/components/AnalyticsDashboard';
+import { AzkarAudioPlayer } from '@/components/AzkarAudioPlayer';
 import { useSurahs } from '@/hooks/useQuranApi';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -88,6 +90,8 @@ export default function Index() {
               <div className="space-y-4 md:space-y-6 order-first lg:order-none">
                 <QuickWidgets />
                 <ProgressDashboard />
+                <AnalyticsDashboard />
+                <AzkarAudioPlayer compact />
                 <ReadingStreakCard compact />
                 <PrayerTimesCard compact />
                 <ContinueReading />

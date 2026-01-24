@@ -27,7 +27,7 @@ export function usePrayerTimes() {
   const [nextPrayer, setNextPrayer] = useState<{ name: string; time: string; remaining: string } | null>(null);
   const [locationName, setLocationName] = useState<string>('');
   const [makruhTimes, setMakruhTimes] = useState<{ sunrise: { start: string; end: string }; zawal: { start: string; end: string }; sunset: { start: string; end: string } } | null>(null);
-  const [calculationMethod, setCalculationMethodStorage] = useLocalStorage<number>('prayer-calculation-method', 2);
+  const [calculationMethod, setCalculationMethodStorage] = useLocalStorage<number>('prayer-calculation-method', 1);
   
   const setCalculationMethod = (method: number) => {
     setCalculationMethodStorage(method);

@@ -16,8 +16,8 @@ import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Settings, User, LogOut, Bell, Palette, Download, Wifi, WifiOff,
-  BookOpen, Star, Clock, Bookmark, TrendingUp, ChevronRight, Send,
-  Sunrise, Moon, Target, Calculator
+  Star, Bookmark, TrendingUp, ChevronRight, Send,
+  Target, Calculator
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -68,15 +68,9 @@ export function SettingsSidebar() {
 
   const {
     settings: expandedSettings,
-    toggleMorningAzkar,
-    toggleEveningAzkar,
-    setMorningTime,
-    setEveningTime,
     toggleReadingGoal,
     setDailyGoal,
     setReadingReminderTime,
-    sendMorningAzkar,
-    sendEveningAzkar,
     sendReadingReminder,
     supported: expandedNotifSupported
   } = useExpandedNotifications();
@@ -315,67 +309,9 @@ export function SettingsSidebar() {
 
           <Separator />
 
-          {/* Expanded Notifications - Azkar & Reading Goals */}
+          {/* Reading Goals */}
           {expandedNotifSupported && (
             <>
-              <div className="space-y-3">
-                <p className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-2">
-                  <Sunrise className="w-4 h-4" /> Morning & Evening Azkar
-                </p>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Sunrise className="w-4 h-4 text-amber-500" />
-                      <span className="text-sm">Morning Azkar</span>
-                    </div>
-                    <Switch
-                      checked={expandedSettings.azkar.morningEnabled}
-                      onCheckedChange={toggleMorningAzkar}
-                    />
-                  </div>
-                  {expandedSettings.azkar.morningEnabled && (
-                    <div className="pl-6 space-y-2">
-                      <Input
-                        type="time"
-                        value={expandedSettings.azkar.morningTime}
-                        onChange={(e) => setMorningTime(e.target.value)}
-                        className="h-8"
-                      />
-                      <Button variant="outline" size="sm" onClick={sendMorningAzkar} className="w-full text-xs">
-                        Test Morning Azkar
-                      </Button>
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Moon className="w-4 h-4 text-indigo-500" />
-                      <span className="text-sm">Evening Azkar</span>
-                    </div>
-                    <Switch
-                      checked={expandedSettings.azkar.eveningEnabled}
-                      onCheckedChange={toggleEveningAzkar}
-                    />
-                  </div>
-                  {expandedSettings.azkar.eveningEnabled && (
-                    <div className="pl-6 space-y-2">
-                      <Input
-                        type="time"
-                        value={expandedSettings.azkar.eveningTime}
-                        onChange={(e) => setEveningTime(e.target.value)}
-                        className="h-8"
-                      />
-                      <Button variant="outline" size="sm" onClick={sendEveningAzkar} className="w-full text-xs">
-                        Test Evening Azkar
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <Separator />
-
               <div className="space-y-3">
                 <p className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-2">
                   <Target className="w-4 h-4" /> Reading Goals

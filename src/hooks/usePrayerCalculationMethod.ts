@@ -25,7 +25,7 @@ export const CALCULATION_METHODS: CalculationMethod[] = [
 ];
 
 export function usePrayerCalculationMethod() {
-  const [method, setMethodStorage] = useLocalStorage<number>('prayer-calculation-method', 2);
+  const [method, setMethodStorage] = useLocalStorage<number>('prayer-calculation-method', 1);
   const [selectedMethod, setSelectedMethod] = useState<CalculationMethod | null>(null);
 
   useEffect(() => {

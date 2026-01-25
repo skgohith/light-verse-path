@@ -82,7 +82,7 @@ export default function Index() {
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
           <div className="max-w-7xl mx-auto relative">
             <div className="text-center max-w-3xl mx-auto">
-              <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-3 md:mb-4 font-serif">Tazkiyah App<span className="text-primary"> App</span>
+              <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-3 md:mb-4 font-serif">Tazkiyah  App<span className="text-primary"> App</span>
               </h1>
               <p className="text-sm md:text-lg text-muted-foreground mb-6 md:mb-8 px-4">
                 Quran, Hadith, Prayer times, Tasbeeh, 99 Names & more

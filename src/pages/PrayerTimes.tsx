@@ -10,10 +10,8 @@ import { MasjidLocator } from '@/components/MasjidLocator';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Clock, Compass, Calendar, Sparkles, BookOpen, ArrowRight, MapPin } from 'lucide-react';
-
 export default function PrayerTimesPage() {
-  return (
-    <div className="min-h-screen bg-background dark">
+  return <div className="min-h-screen bg-background dark">
       <Header />
       <main className="py-8 px-4">
         <div className="max-w-7xl mx-auto">
@@ -38,10 +36,7 @@ export default function PrayerTimesPage() {
                 <div className="space-y-6">
                   <div className="bg-card border border-border rounded-xl p-6">
                     <h3 className="font-semibold text-foreground mb-4">About Prayer Times</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      Prayer times are calculated based on your location using the Islamic Society of North America (ISNA) method. 
-                      The five daily prayers are Fajr (dawn), Dhuhr (midday), Asr (afternoon), Maghrib (sunset), and Isha (night).
-                    </p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">Prayer times are calculated based on your location. The five daily prayers are Fajr (dawn), Dhuhr (midday), Asr (afternoon), Maghrib (sunset), and Isha (night).</p>
                   </div>
                   <Link to="/read">
                     <Button className="w-full gap-2">Read Quran <ArrowRight className="w-4 h-4" /></Button>
@@ -91,6 +86,5 @@ export default function PrayerTimesPage() {
         </div>
       </main>
       <Footer />
-    </div>
-  );
+    </div>;
 }

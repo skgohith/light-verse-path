@@ -16,27 +16,65 @@ import { useSurahs } from '@/hooks/useQuranApi';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LearningPlan } from '@/types/quran';
-
-const featuredPlans: LearningPlan[] = [
-  { id: 'quran-year', title: 'Quran in a Year', description: 'Read the entire Quran in 365 days', icon: 'calendar', category: 'Reading Plan', duration: '365 days' },
-  { id: 'memorization', title: 'Memorization Guide', description: 'Step-by-step memorization techniques', icon: 'star', category: 'Learning', duration: 'Self-paced' },
-  { id: 'ramadan', title: 'Ramadan Special', description: 'Complete Quran during Ramadan', icon: 'moon', category: 'Seasonal', duration: '30 days' },
-];
-
-const features = [
-  { icon: BookOpen, title: 'Read Quran', description: 'Arabic & translation', path: '/read' },
-  { icon: Headphones, title: 'Audio', description: 'Listen to reciters', path: '/read' },
-  { icon: Clock, title: 'Prayer Times', description: 'Live prayer times', path: '/tools' },
-  { icon: Compass, title: 'Qibla', description: 'Find direction', path: '/tools' },
-  { icon: Sparkles, title: '99 Names', description: 'Names of Allah', path: '/tools' },
-  { icon: Star, title: 'Hadith', description: '6 collections', path: '/hadith' },
-];
-
+const featuredPlans: LearningPlan[] = [{
+  id: 'quran-year',
+  title: 'Quran in a Year',
+  description: 'Read the entire Quran in 365 days',
+  icon: 'calendar',
+  category: 'Reading Plan',
+  duration: '365 days'
+}, {
+  id: 'memorization',
+  title: 'Memorization Guide',
+  description: 'Step-by-step memorization techniques',
+  icon: 'star',
+  category: 'Learning',
+  duration: 'Self-paced'
+}, {
+  id: 'ramadan',
+  title: 'Ramadan Special',
+  description: 'Complete Quran during Ramadan',
+  icon: 'moon',
+  category: 'Seasonal',
+  duration: '30 days'
+}];
+const features = [{
+  icon: BookOpen,
+  title: 'Read Quran',
+  description: 'Arabic & translation',
+  path: '/read'
+}, {
+  icon: Headphones,
+  title: 'Audio',
+  description: 'Listen to reciters',
+  path: '/read'
+}, {
+  icon: Clock,
+  title: 'Prayer Times',
+  description: 'Live prayer times',
+  path: '/tools'
+}, {
+  icon: Compass,
+  title: 'Qibla',
+  description: 'Find direction',
+  path: '/tools'
+}, {
+  icon: Sparkles,
+  title: '99 Names',
+  description: 'Names of Allah',
+  path: '/tools'
+}, {
+  icon: Star,
+  title: 'Hadith',
+  description: '6 collections',
+  path: '/hadith'
+}];
 export default function Index() {
-  const { surahs, loading } = useSurahs();
-
-  return (
-    <div className="min-h-screen bg-background dark flex flex-col">
+  const {
+    surahs,
+    loading
+  } = useSurahs();
+  return <div className="min-h-screen bg-background dark flex flex-col">
       <Header />
       <main className="flex-1 pb-20 md:pb-0">
         {/* Hero Section */}
@@ -44,8 +82,7 @@ export default function Index() {
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
           <div className="max-w-7xl mx-auto relative">
             <div className="text-center max-w-3xl mx-auto">
-              <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-3 md:mb-4">
-                Complete <span className="text-primary">Islamic App</span>
+              <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-3 md:mb-4 font-serif">Tazkiyah App<span className="text-primary"> App</span>
               </h1>
               <p className="text-sm md:text-lg text-muted-foreground mb-6 md:mb-8 px-4">
                 Quran, Hadith, Prayer times, Tasbeeh, 99 Names & more
@@ -64,19 +101,13 @@ export default function Index() {
 
             {/* Feature Grid */}
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-4 mt-8 md:mt-12">
-              {features.map((f) => (
-                <Link 
-                  key={f.title} 
-                  to={f.path} 
-                  className="bg-card border border-border rounded-xl p-3 md:p-4 text-center hover:border-primary/50 transition-colors"
-                >
+              {features.map(f => <Link key={f.title} to={f.path} className="bg-card border border-border rounded-xl p-3 md:p-4 text-center hover:border-primary/50 transition-colors">
                   <div className="w-8 h-8 md:w-10 md:h-10 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-1 md:mb-2">
                     <f.icon className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                   </div>
                   <h3 className="font-medium text-foreground text-xs md:text-sm">{f.title}</h3>
                   <p className="text-[10px] md:text-xs text-muted-foreground hidden sm:block">{f.description}</p>
-                </Link>
-              ))}
+                </Link>)}
             </div>
           </div>
         </section>
@@ -107,10 +138,9 @@ export default function Index() {
                     </Link>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                    {loading 
-                      ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-20 md:h-24 rounded-xl" />) 
-                      : surahs.slice(0, 4).map((surah) => <SurahCard key={surah.number} surah={surah} />)
-                    }
+                    {loading ? Array.from({
+                    length: 4
+                  }).map((_, i) => <Skeleton key={i} className="h-20 md:h-24 rounded-xl" />) : surahs.slice(0, 4).map(surah => <SurahCard key={surah.number} surah={surah} />)}
                   </div>
                 </div>
 
@@ -123,7 +153,7 @@ export default function Index() {
                     </Link>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-                    {featuredPlans.map((plan) => <LearningPlanCard key={plan.id} plan={plan} />)}
+                    {featuredPlans.map(plan => <LearningPlanCard key={plan.id} plan={plan} />)}
                   </div>
                 </div>
 
@@ -136,20 +166,22 @@ export default function Index() {
                     </Link>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {[
-                      { id: 'bukhari', name: 'Sahih Bukhari', arabic: 'صحيح البخاري' },
-                      { id: 'muslim', name: 'Sahih Muslim', arabic: 'صحيح مسلم' },
-                      { id: 'tirmidhi', name: 'Jami Tirmidhi', arabic: 'جامع الترمذي' },
-                    ].map((book) => (
-                      <Link 
-                        key={book.id}
-                        to={`/hadith/${book.id}`}
-                        className="bg-card border border-border rounded-xl p-4 hover:border-primary/50 transition-colors"
-                      >
+                    {[{
+                    id: 'bukhari',
+                    name: 'Sahih Bukhari',
+                    arabic: 'صحيح البخاري'
+                  }, {
+                    id: 'muslim',
+                    name: 'Sahih Muslim',
+                    arabic: 'صحيح مسلم'
+                  }, {
+                    id: 'tirmidhi',
+                    name: 'Jami Tirmidhi',
+                    arabic: 'جامع الترمذي'
+                  }].map(book => <Link key={book.id} to={`/hadith/${book.id}`} className="bg-card border border-border rounded-xl p-4 hover:border-primary/50 transition-colors">
                         <p className="font-arabic text-lg text-primary">{book.arabic}</p>
                         <p className="text-sm text-foreground">{book.name}</p>
-                      </Link>
-                    ))}
+                      </Link>)}
                   </div>
                 </div>
               </div>
@@ -159,6 +191,5 @@ export default function Index() {
       </main>
       <MobileNav />
       <Footer className="hidden md:block" />
-    </div>
-  );
+    </div>;
 }

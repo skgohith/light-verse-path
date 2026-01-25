@@ -16,7 +16,7 @@ export default function PrayerTimesPage() {
       <main className="py-8 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Islamic Tools</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 font-serif">Tools</h1>
             <p className="text-muted-foreground">Prayer times, Qibla direction, calendar, and more</p>
           </div>
 

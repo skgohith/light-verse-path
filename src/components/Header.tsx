@@ -5,93 +5,61 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { SettingsSidebar } from '@/components/SettingsSidebar';
 import { cn } from '@/lib/utils';
-
-const navItems = [
-  { label: 'Home', path: '/' },
-  { label: 'Read', path: '/read' },
-  { label: 'Learn', path: '/learn' },
-  { label: 'Tools', path: '/tools' },
-  { label: 'Bookmarks', path: '/bookmarks' },
-];
-
+const navItems = [{
+  label: 'Home',
+  path: '/'
+}, {
+  label: 'Read',
+  path: '/read'
+}, {
+  label: 'Learn',
+  path: '/learn'
+}, {
+  label: 'Tools',
+  path: '/tools'
+}, {
+  label: 'Bookmarks',
+  path: '/bookmarks'
+}];
 export function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
-
-  return (
-    <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
+  return <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 md:h-16">
           <Link to="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Book className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="text-lg md:text-xl font-bold text-foreground">Islamic App</span>
+            <span className="text-lg md:text-xl font-bold text-foreground text-right font-serif"> Tazkiyah </span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                  location.pathname === item.path
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                )}
-              >
+            {navItems.map(item => <Link key={item.path} to={item.path} className={cn('px-3 py-2 rounded-lg text-sm font-medium transition-colors', location.pathname === item.path ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted')}>
                 {item.label}
-              </Link>
-            ))}
+              </Link>)}
           </nav>
 
           <div className="flex items-center gap-2">
             <div className="hidden sm:flex relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input 
-                type="search" 
-                placeholder="Search..." 
-                value={searchQuery} 
-                onChange={(e) => setSearchQuery(e.target.value)} 
-                className="pl-9 w-40 lg:w-48 bg-muted border-none h-9" 
-              />
+              <Input type="search" placeholder="Search..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-9 w-40 lg:w-48 bg-muted border-none h-9" />
             </div>
             <SettingsSidebar />
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="md:hidden text-muted-foreground" 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
+            <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
           </div>
         </div>
 
-        {mobileMenuOpen && (
-          <nav className="md:hidden py-3 border-t border-border">
+        {mobileMenuOpen && <nav className="md:hidden py-3 border-t border-border">
             <div className="flex flex-col gap-1">
-              {navItems.map((item) => (
-                <Link 
-                  key={item.path} 
-                  to={item.path} 
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={cn(
-                    'px-4 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                    location.pathname === item.path 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  )}
-                >
+              {navItems.map(item => <Link key={item.path} to={item.path} onClick={() => setMobileMenuOpen(false)} className={cn('px-4 py-2.5 rounded-lg text-sm font-medium transition-colors', location.pathname === item.path ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted')}>
                   {item.label}
-                </Link>
-              ))}
+                </Link>)}
             </div>
-          </nav>
-        )}
+          </nav>}
       </div>
-    </header>
-  );
+    </header>;
 }

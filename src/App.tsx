@@ -10,6 +10,8 @@ import { SplashScreen } from "@/components/SplashScreen";
 import Index from "./pages/Index";
 import Read from "./pages/Read";
 import SurahDetail from "./pages/SurahDetail";
+import MushafIndex from "./pages/MushafIndex";
+import Mushaf from "./pages/Mushaf";
 import Learn from "./pages/Learn";
 import Bookmarks from "./pages/Bookmarks";
 import PrayerTimes from "./pages/PrayerTimes";
@@ -39,6 +41,8 @@ const App = () => {
                   <Route path="/" element={<Index />} />
                   <Route path="/read" element={<Read />} />
                   <Route path="/surah/:surahNumber" element={<SurahDetail />} />
+                  <Route path="/mushaf" element={<MushafIndex />} />
+                  <Route path="/mushaf/:surahNumber" element={<Mushaf />} />
                   <Route path="/learn" element={<Learn />} />
                   <Route path="/bookmarks" element={<Bookmarks />} />
                   <Route path="/prayer-times" element={<PrayerTimes />} />

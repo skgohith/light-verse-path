@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SurahCard } from '@/components/SurahCard';
@@ -6,7 +7,7 @@ import { useSurahs } from '@/hooks/useQuranApi';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Search, Grid, List, Filter } from 'lucide-react';
+import { Search, Grid, List, Filter, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Select,
@@ -43,11 +44,20 @@ export default function Read() {
       <main className="py-8 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Read Quran</h1>
-            <p className="text-muted-foreground">
-              Browse all 114 Surahs with Arabic text and English translations
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">Read Quran</h1>
+              <p className="text-muted-foreground">
+                Browse all 114 Surahs with Arabic text and translations
+              </p>
+            </div>
+            <Link to="/mushaf">
+              <Button variant="outline" className="gap-2">
+                <BookOpen className="w-4 h-4" />
+                <span className="font-arabic">المصحف</span>
+                <span className="text-muted-foreground text-sm">(Arabic Only)</span>
+              </Button>
+            </Link>
           </div>
 
           {/* Search & Filters */}

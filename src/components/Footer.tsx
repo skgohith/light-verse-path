@@ -80,9 +80,15 @@ export function Footer({
 
           {/* About */}
           <div>
-            
+            <h4 className="font-semibold text-foreground mb-4">About</h4>
             <ul className="space-y-2">
-              {footerLinks.about.map(link => {})}
+              {footerLinks.about.map(link => (
+                <li key={link.path}>
+                  <Link to={link.path} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

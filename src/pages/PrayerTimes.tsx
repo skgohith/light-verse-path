@@ -2,15 +2,18 @@ import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { PrayerTimesCard } from '@/components/PrayerTimesCard';
+import { PrayerCountdown } from '@/components/PrayerCountdown';
 import { QiblaCompass } from '@/components/QiblaCompass';
 import { HijriCalendar } from '@/components/HijriCalendar';
 import { NamesOfAllahGrid } from '@/components/NamesOfAllahGrid';
 import { DuasSection } from '@/components/DuasSection';
 import { MasjidLocator } from '@/components/MasjidLocator';
+import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Clock, Compass, Calendar, Sparkles, BookOpen, ArrowRight, MapPin } from 'lucide-react';
 export default function PrayerTimesPage() {
+  const { nextPrayer } = usePrayerTimes();
   return <div className="min-h-screen bg-background dark">
       <Header />
       <main className="py-8 px-4">
@@ -32,7 +35,10 @@ export default function PrayerTimesPage() {
 
             <TabsContent value="prayer">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <PrayerTimesCard />
+                <div className="space-y-6">
+                  <PrayerCountdown nextPrayer={nextPrayer} />
+                  <PrayerTimesCard />
+                </div>
                 <div className="space-y-6">
                   <div className="bg-card border border-border rounded-xl p-6">
                     <h3 className="font-semibold text-foreground mb-4">About Prayer Times</h3>

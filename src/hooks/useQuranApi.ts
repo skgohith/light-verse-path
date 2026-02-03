@@ -44,7 +44,7 @@ export function useSurahDetail(surahNumber: number) {
       try {
         const [arabicRes, englishRes, translitRes] = await Promise.all([
           fetch(`${API_BASE}/surah/${surahNumber}/ar.alafasy`),
-          fetch(`${API_BASE}/surah/${surahNumber}/en.asad`),
+          fetch(`${API_BASE}/surah/${surahNumber}/en.sahih`),
           fetch(`${API_BASE}/surah/${surahNumber}/en.transliteration`)
         ]);
 

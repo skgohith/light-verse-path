@@ -5,9 +5,11 @@ import { Footer } from '@/components/Footer';
 import { AudioPlayer } from '@/components/AudioPlayer';
 import { TafsirSection } from '@/components/TafsirSection';
 import { useSurahDetail } from '@/hooks/useQuranApi';
+import { useRomanUrduSurah } from '@/hooks/useRomanUrduQuran';
 import { useReadingProgress, useBookmarks } from '@/hooks/useLocalStorage';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChevronLeft, ChevronRight, Bookmark, Share2, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -15,11 +17,13 @@ export default function SurahDetail() {
   const { surahNumber } = useParams<{ surahNumber: string }>();
   const number = parseInt(surahNumber || '1', 10);
   const { surah, translation, transliteration, loading } = useSurahDetail(number);
+  const { surah: romanUrduSurah } = useRomanUrduSurah(number);
   const { updateProgress } = useReadingProgress();
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarks();
   const [currentAyah, setCurrentAyah] = useState(1);
   const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg'>('md');
   const [showTransliteration, setShowTransliteration] = useState(true);
+  const [translationLang, setTranslationLang] = useState<'english' | 'romanUrdu'>('romanUrdu');
 
   useEffect(() => {
     if (surah) {
@@ -128,9 +132,20 @@ export default function SurahDetail() {
                 ))}
               </div>
             </div>
-            <Button variant={showTransliteration ? 'default' : 'outline'} size="sm" onClick={() => setShowTransliteration(!showTransliteration)}>
-              Transliteration
-            </Button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Select value={translationLang} onValueChange={(v) => setTranslationLang(v as 'english' | 'romanUrdu')}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Translation" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="romanUrdu">Roman Urdu</SelectItem>
+                  <SelectItem value="english">English</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button variant={showTransliteration ? 'default' : 'outline'} size="sm" onClick={() => setShowTransliteration(!showTransliteration)}>
+                Transliteration
+              </Button>
+            </div>
           </div>
 
           {/* Bismillah */}
@@ -147,17 +162,34 @@ export default function SurahDetail() {
             {surah.ayahs.map((ayah, index) => {
               const translationAyah = translation?.ayahs[index];
               const translitAyah = transliteration?.ayahs[index];
+              const romanUrduVerse = romanUrduSurah?.verses[index];
               const bookmarked = isBookmarked(number, ayah.numberInSurah);
+
+              // Get translation text based on selected language
+              const getTranslationText = () => {
+                if (translationLang === 'romanUrdu' && romanUrduVerse) {
+                  return romanUrduVerse.translation;
+                }
+                return translationAyah?.text || '';
+              };
+
+              // Get transliteration from local data if available
+              const getTransliteration = () => {
+                if (romanUrduVerse?.transliteration) {
+                  return romanUrduVerse.transliteration;
+                }
+                return translitAyah?.text || '';
+              };
 
               return (
                 <div key={ayah.number} id={`ayah-${ayah.numberInSurah}`} className={cn('bg-card border border-border rounded-xl p-6 transition-all', currentAyah === ayah.numberInSurah && 'border-primary/50 bg-primary/5')}>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <span className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-sm font-semibold text-primary">{ayah.numberInSurah}</span>
-                      <span className="text-xs text-muted-foreground">Juz {ayah.juz} • Page {ayah.page}</span>
+                      <span className="text-xs text-muted-foreground">Juz {romanUrduVerse?.juz || ayah.juz} • Page {ayah.page}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => handleBookmark(ayah.numberInSurah, translationAyah?.text || '')} className={cn(bookmarked ? 'text-primary' : 'text-muted-foreground')}>
+                      <Button variant="ghost" size="icon" onClick={() => handleBookmark(ayah.numberInSurah, getTranslationText())} className={cn(bookmarked ? 'text-primary' : 'text-muted-foreground')}>
                         <Bookmark className="w-4 h-4" fill={bookmarked ? 'currentColor' : 'none'} />
                       </Button>
                       <Button variant="ghost" size="icon" className="text-muted-foreground"><Share2 className="w-4 h-4" /></Button>
@@ -166,12 +198,18 @@ export default function SurahDetail() {
 
                   <p className={cn('font-arabic text-foreground text-right leading-loose mb-4', fontSizeClasses[fontSize].arabic)} dir="rtl">{ayah.text}</p>
 
-                  {showTransliteration && translitAyah && (
-                    <p className={cn('text-primary italic mb-3', fontSizeClasses[fontSize].translit)}>{translitAyah.text}</p>
+                  {showTransliteration && (
+                    <p className={cn('text-primary italic mb-3', fontSizeClasses[fontSize].translit)}>{getTransliteration()}</p>
                   )}
 
-                  {translationAyah && (
-                    <p className={cn('text-muted-foreground leading-relaxed', fontSizeClasses[fontSize].english)}>{translationAyah.text}</p>
+                  <p className={cn('text-muted-foreground leading-relaxed', fontSizeClasses[fontSize].english)}>{getTranslationText()}</p>
+
+                  {/* Deep Meaning Section for Roman Urdu */}
+                  {translationLang === 'romanUrdu' && romanUrduVerse?.deepMeaning && (
+                    <details className="mt-4 pt-4 border-t border-border">
+                      <summary className="text-sm text-primary cursor-pointer hover:underline">View Deep Meaning</summary>
+                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{romanUrduVerse.deepMeaning}</p>
+                    </details>
                   )}
 
                   <TafsirSection surahNumber={number} ayahNumber={ayah.numberInSurah} />

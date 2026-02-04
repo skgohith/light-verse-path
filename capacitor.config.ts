@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.0f789b909e94442d87bef904ba526a7c',
+  appId: 'app.lovable.a0f789b909e94442d87bef904ba526a7c',
   appName: 'light-verse-path',
   webDir: 'dist',
   server: {

@@ -3,7 +3,6 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { PrayerTimesCard } from '@/components/PrayerTimesCard';
 import { PrayerCountdown } from '@/components/PrayerCountdown';
-import { QiblaCompass } from '@/components/QiblaCompass';
 import { HijriCalendar } from '@/components/HijriCalendar';
 import { NamesOfAllahGrid } from '@/components/NamesOfAllahGrid';
 import { DuasSection } from '@/components/DuasSection';
@@ -11,7 +10,7 @@ import { MasjidLocator } from '@/components/MasjidLocator';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Clock, Compass, Calendar, Sparkles, BookOpen, ArrowRight, MapPin } from 'lucide-react';
+import { Clock, Calendar, Sparkles, BookOpen, ArrowRight, MapPin } from 'lucide-react';
 export default function PrayerTimesPage() {
   const { nextPrayer } = usePrayerTimes();
   return <div className="min-h-screen bg-background dark">
@@ -20,13 +19,12 @@ export default function PrayerTimesPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 font-serif">Tools</h1>
-            <p className="text-muted-foreground">Prayer times, Qibla direction, calendar, and more</p>
+            <p className="text-muted-foreground">Prayer times, calendar, and more</p>
           </div>
 
           <Tabs defaultValue="prayer" className="w-full">
-            <TabsList className="grid w-full grid-cols-6 mb-8">
+            <TabsList className="grid w-full grid-cols-5 mb-8">
               <TabsTrigger value="prayer" className="gap-2"><Clock className="w-4 h-4" /><span className="hidden sm:inline">Prayer</span></TabsTrigger>
-              <TabsTrigger value="qibla" className="gap-2"><Compass className="w-4 h-4" /><span className="hidden sm:inline">Qibla</span></TabsTrigger>
               <TabsTrigger value="locator" className="gap-2"><MapPin className="w-4 h-4" /><span className="hidden sm:inline">Nearby</span></TabsTrigger>
               <TabsTrigger value="calendar" className="gap-2"><Calendar className="w-4 h-4" /><span className="hidden sm:inline">Calendar</span></TabsTrigger>
               <TabsTrigger value="names" className="gap-2"><Sparkles className="w-4 h-4" /><span className="hidden sm:inline">99 Names</span></TabsTrigger>
@@ -51,19 +49,6 @@ export default function PrayerTimesPage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="qibla">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <QiblaCompass />
-                <div className="bg-card border border-border rounded-xl p-6">
-                  <h3 className="font-semibold text-foreground mb-4">About Qibla</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                    The Qibla is the direction of the Kaaba in Mecca, Saudi Arabia. Muslims face this direction during prayer.
-                    The compass shows the direction from your current location.
-                  </p>
-                  <p className="text-muted-foreground text-sm">Allow location access for accurate direction.</p>
-                </div>
-              </div>
-            </TabsContent>
 
             <TabsContent value="locator">
               <MasjidLocator />

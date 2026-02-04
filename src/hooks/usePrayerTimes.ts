@@ -288,36 +288,3 @@ export function usePrayerTimes() {
   };
 }
 
-export function useQiblaDirection() {
-  const [direction, setDirection] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            const response = await fetch(
-              `https://api.aladhan.com/v1/qibla/${position.coords.latitude}/${position.coords.longitude}`
-            );
-            const data = await response.json();
-            if (data.code === 200) {
-              setDirection(data.data.direction);
-            }
-          } catch (err) {
-            console.error('Failed to get qibla direction');
-          } finally {
-            setLoading(false);
-          }
-        },
-        () => {
-          setLoading(false);
-        }
-      );
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
-  return { direction, loading };
-}

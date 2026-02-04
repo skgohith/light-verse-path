@@ -6,11 +6,11 @@ import { PrayerCountdown } from '@/components/PrayerCountdown';
 import { HijriCalendar } from '@/components/HijriCalendar';
 import { NamesOfAllahGrid } from '@/components/NamesOfAllahGrid';
 import { DuasSection } from '@/components/DuasSection';
-import { MasjidLocator } from '@/components/MasjidLocator';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Clock, Calendar, Sparkles, BookOpen, ArrowRight, MapPin } from 'lucide-react';
+import { Clock, Calendar, Sparkles, BookOpen, ArrowRight } from 'lucide-react';
+
 export default function PrayerTimesPage() {
   const { nextPrayer } = usePrayerTimes();
   return <div className="min-h-screen bg-background dark">
@@ -23,9 +23,8 @@ export default function PrayerTimesPage() {
           </div>
 
           <Tabs defaultValue="prayer" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-8">
+            <TabsList className="grid w-full grid-cols-4 mb-8">
               <TabsTrigger value="prayer" className="gap-2"><Clock className="w-4 h-4" /><span className="hidden sm:inline">Prayer</span></TabsTrigger>
-              <TabsTrigger value="locator" className="gap-2"><MapPin className="w-4 h-4" /><span className="hidden sm:inline">Nearby</span></TabsTrigger>
               <TabsTrigger value="calendar" className="gap-2"><Calendar className="w-4 h-4" /><span className="hidden sm:inline">Calendar</span></TabsTrigger>
               <TabsTrigger value="names" className="gap-2"><Sparkles className="w-4 h-4" /><span className="hidden sm:inline">99 Names</span></TabsTrigger>
               <TabsTrigger value="duas" className="gap-2"><BookOpen className="w-4 h-4" /><span className="hidden sm:inline">Duas</span></TabsTrigger>
@@ -47,11 +46,6 @@ export default function PrayerTimesPage() {
                   </Link>
                 </div>
               </div>
-            </TabsContent>
-
-
-            <TabsContent value="locator">
-              <MasjidLocator />
             </TabsContent>
 
             <TabsContent value="calendar">

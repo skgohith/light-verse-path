@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, GraduationCap, Headphones, Clock, Compass, Sparkles, Star } from 'lucide-react';
+import { ArrowRight, BookOpen, Headphones, Clock, Heart, Sparkles, Star } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { MobileNav } from '@/components/MobileNav';
@@ -8,36 +8,13 @@ import { ContinueReading } from '@/components/ContinueReading';
 import { DailyVerse } from '@/components/DailyVerse';
 import { PrayerTimesCard } from '@/components/PrayerTimesCard';
 import { ReadingStreakCard } from '@/components/ReadingStreakCard';
-import { LearningPlanCard } from '@/components/LearningPlanCard';
 import { QuickWidgets } from '@/components/QuickWidgets';
 import { ProgressDashboard } from '@/components/ProgressDashboard';
 import { AnalyticsDashboard } from '@/components/AnalyticsDashboard';
 import { useSurahs } from '@/hooks/useQuranApi';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LearningPlan } from '@/types/quran';
-const featuredPlans: LearningPlan[] = [{
-  id: 'quran-year',
-  title: 'Quran in a Year',
-  description: 'Read the entire Quran in 365 days',
-  icon: 'calendar',
-  category: 'Reading Plan',
-  duration: '365 days'
-}, {
-  id: 'memorization',
-  title: 'Memorization Guide',
-  description: 'Step-by-step memorization techniques',
-  icon: 'star',
-  category: 'Learning',
-  duration: 'Self-paced'
-}, {
-  id: 'ramadan',
-  title: 'Ramadan Special',
-  description: 'Complete Quran during Ramadan',
-  icon: 'moon',
-  category: 'Seasonal',
-  duration: '30 days'
-}];
+
 const features = [{
   icon: BookOpen,
   title: 'Read Quran',
@@ -54,9 +31,9 @@ const features = [{
   description: 'Live prayer times',
   path: '/tools'
 }, {
-  icon: Compass,
-  title: 'Qibla',
-  description: 'Find direction',
+  icon: Heart,
+  title: 'Duas',
+  description: 'Daily prayers',
   path: '/tools'
 }, {
   icon: Sparkles,
@@ -140,19 +117,6 @@ export default function Index() {
                     {loading ? Array.from({
                     length: 4
                   }).map((_, i) => <Skeleton key={i} className="h-20 md:h-24 rounded-xl" />) : surahs.slice(0, 4).map(surah => <SurahCard key={surah.number} surah={surah} />)}
-                  </div>
-                </div>
-
-                {/* Learning Plans */}
-                <div>
-                  <div className="flex items-center justify-between mb-3 md:mb-4">
-                    <h2 className="text-lg md:text-xl font-semibold text-foreground">Learning Plans</h2>
-                    <Link to="/learn" className="text-sm text-primary hover:underline flex items-center gap-1">
-                      View all <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-                    {featuredPlans.map(plan => <LearningPlanCard key={plan.id} plan={plan} />)}
                   </div>
                 </div>
 

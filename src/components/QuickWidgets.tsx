@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Star, Clock, Compass, BookOpen, BookMarked, TrendingUp } from 'lucide-react';
+import { Star, Clock, BookOpen, BookMarked, TrendingUp, Heart } from 'lucide-react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { cn } from '@/lib/utils';
 
@@ -44,16 +44,6 @@ export function QuickWidgets() {
       ),
     },
     {
-      id: 'qibla',
-      title: 'Qibla',
-      icon: Compass,
-      path: '/tools',
-      gradient: 'from-blue-500/20 to-blue-600/10',
-      content: (
-        <p className="text-xs text-muted-foreground mt-1">Find direction</p>
-      ),
-    },
-    {
       id: 'read',
       title: 'Continue',
       icon: BookOpen,
@@ -74,13 +64,13 @@ export function QuickWidgets() {
       ),
     },
     {
-      id: 'memorize',
-      title: 'Hifz',
-      icon: TrendingUp,
+      id: 'duas',
+      title: 'Duas',
+      icon: Heart,
       path: '/memorization',
-      gradient: 'from-cyan-500/20 to-cyan-600/10',
+      gradient: 'from-pink-500/20 to-pink-600/10',
       content: (
-        <p className="text-xs text-muted-foreground mt-1">Track progress</p>
+        <p className="text-xs text-muted-foreground mt-1">Daily prayers</p>
       ),
     },
   ];

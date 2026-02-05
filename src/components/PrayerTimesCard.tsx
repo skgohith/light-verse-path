@@ -1,7 +1,8 @@
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { CALCULATION_METHODS } from '@/hooks/usePrayerCalculationMethod';
-import { MapPin, RefreshCw, AlertTriangle } from 'lucide-react';
+import { MapPin, RefreshCw, AlertTriangle, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 
 interface PrayerTimesCardProps {
@@ -28,6 +29,7 @@ export function PrayerTimesCard({ compact = false, className }: PrayerTimesCardP
     nextPrayer, 
     makruhTimes, 
     calculationMethod,
+    setCalculationMethod,
     refreshLocation 
   } = usePrayerTimes();
 
@@ -253,11 +255,30 @@ export function PrayerTimesCard({ compact = false, className }: PrayerTimesCardP
         )}
 
         {/* Calculation Method Footer */}
-        {currentMethod && (
-          <div className="mt-6 pt-4 border-t border-border text-center">
-            <p className="text-sm text-muted-foreground">{currentMethod.name}</p>
+        <div className="mt-6 pt-4 border-t border-border">
+          <div className="flex items-center gap-2 mb-2">
+            <Settings2 className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-foreground">Calculation Method</span>
           </div>
-        )}
+          <Select 
+            value={calculationMethod.toString()} 
+            onValueChange={(v) => setCalculationMethod(parseInt(v))}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select method" />
+            </SelectTrigger>
+            <SelectContent className="max-h-64">
+              {CALCULATION_METHODS.map((m) => (
+                <SelectItem key={m.id} value={m.id.toString()}>
+                  <div className="flex flex-col">
+                    <span className="text-sm">{m.name}</span>
+                    <span className="text-xs text-muted-foreground">{m.description}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </div>
   );

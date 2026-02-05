@@ -8,16 +8,18 @@ import { useExpandedNotifications } from '@/hooks/useExpandedNotifications';
 import { useOfflineQuran } from '@/hooks/useOfflineQuran';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { CALCULATION_METHODS } from '@/hooks/usePrayerCalculationMethod';
+import { useNativePushNotifications } from '@/hooks/useNativePushNotifications';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { 
   Settings, User, LogOut, Bell, Palette, Download, Wifi, WifiOff,
-  Star, Bookmark, TrendingUp, ChevronRight, Send,
-  Target, Calculator
+  Star, Bookmark, TrendingUp, ChevronRight, Send, Smartphone,
+  Target, Calculator, CheckCircle2, XCircle
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -57,6 +59,13 @@ export function SettingsSidebar() {
     calculationMethod,
     setCalculationMethod
   } = usePrayerTimes();
+
+  const {
+    settings: nativeSettings,
+    isNative,
+    enableNotifications: enableNativeNotifications,
+    disableNotifications: disableNativeNotifications,
+  } = useNativePushNotifications();
 
   const {
     settings: verseSettings,
@@ -202,13 +211,80 @@ export function SettingsSidebar() {
 
           <Separator />
 
+          {/* Native Push Notifications */}
+          <div className="space-y-3">
+            <p className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-2">
+              <Smartphone className="w-4 h-4" /> Native Notifications
+            </p>
+            
+            {isNative ? (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">Push Notifications</span>
+                    {nativeSettings.enabled ? (
+                      <Badge variant="outline" className="text-green-500 border-green-500/50 gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> Enabled
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-muted-foreground gap-1">
+                        <XCircle className="w-3 h-3" /> Disabled
+                      </Badge>
+                    )}
+                  </div>
+                  <Switch
+                    checked={nativeSettings.enabled}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        enableNativeNotifications().then((success) => {
+                          if (success) {
+                            toast.success('Push notifications enabled');
+                          } else {
+                            toast.error('Failed to enable notifications');
+                          }
+                        });
+                      } else {
+                        disableNativeNotifications();
+                        toast.info('Push notifications disabled');
+                      }
+                    }}
+                  />
+                </div>
+                
+                {nativeSettings.enabled && nativeSettings.token && (
+                  <div className="bg-muted/50 rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground mb-1">Device Token</p>
+                    <p className="text-xs font-mono text-foreground truncate">
+                      {nativeSettings.token.substring(0, 30)}...
+                    </p>
+                  </div>
+                )}
+                
+                <p className="text-xs text-muted-foreground">
+                  Receive prayer reminders and daily verses as push notifications
+                </p>
+              </div>
+            ) : (
+              <div className="bg-muted/50 rounded-lg p-3">
+                <p className="text-sm text-muted-foreground">
+                  Native push notifications are only available in the mobile app
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Install the app on your device to receive push notifications
+                </p>
+              </div>
+            )}
+          </div>
+
+          <Separator />
+
           {/* Prayer Notifications */}
           <div className="space-y-3">
             <p className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-2">
-              <Bell className="w-4 h-4" /> Prayer Notifications
+              <Bell className="w-4 h-4" /> Web Notifications
             </p>
             
-            {notifSupported ? (
+            {notifSupported && !isNative ? (
               <>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Enable Notifications</span>
@@ -254,7 +330,7 @@ export function SettingsSidebar() {
               </>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Notifications not supported on this device
+                {isNative ? 'Use Native Notifications above instead' : 'Notifications not supported on this device'}
               </p>
             )}
           </div>

@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { SplashScreen } from "@/components/SplashScreen";
+import { App as CapacitorApp } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 import Index from "./pages/Index";
 import Read from "./pages/Read";
 import SurahDetail from "./pages/SurahDetail";
@@ -24,6 +26,33 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Component to handle back button
+function BackButtonHandler() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (Capacitor.getPlatform() === 'web') return;
+
+    const backButtonListener = CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+      // If on home page, minimize the app instead of closing
+      if (location.pathname === '/') {
+        CapacitorApp.minimizeApp();
+      } else if (canGoBack) {
+        navigate(-1);
+      } else {
+        navigate('/');
+      }
+    });
+
+    return () => {
+      backButtonListener.then(listener => listener.remove());
+    };
+  }, [navigate, location.pathname]);
+
+  return null;
+}
+
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
 
@@ -37,6 +66,7 @@ const App = () => {
               <Toaster />
               <Sonner />
               <BrowserRouter>
+                <BackButtonHandler />
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/read" element={<Read />} />

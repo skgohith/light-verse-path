@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Surah, SurahDetail, TafsirText } from '@/types/quran';
+import { Surah, SurahDetail } from '@/types/quran';
 
 const API_BASE = 'https://api.alquran.cloud/v1';
+const QURAN_COM_API = 'https://api.quran.com/api/v4';
 
 export function useSurahs() {
   const [surahs, setSurahs] = useState<Surah[]>([]);
@@ -42,22 +43,57 @@ export function useSurahDetail(surahNumber: number) {
     async function fetchSurahDetail() {
       setLoading(true);
       try {
-        const [arabicRes, englishRes, translitRes] = await Promise.all([
-          fetch(`${API_BASE}/surah/${surahNumber}/ar.alafasy`),
-          fetch(`${API_BASE}/surah/${surahNumber}/en.sahih`),
-          fetch(`${API_BASE}/surah/${surahNumber}/en.transliteration`)
-        ]);
-
+        // Fetch Arabic from alquran.cloud (for audio support)
+        const arabicRes = await fetch(`${API_BASE}/surah/${surahNumber}/ar.alafasy`);
         const arabicData = await arabicRes.json();
-        const englishData = await englishRes.json();
-        const translitData = await translitRes.json();
 
         if (arabicData.code === 200) {
           setSurah(arabicData.data);
         }
-        if (englishData.code === 200) {
-          setTranslation(englishData.data);
+
+        // Fetch English translation from Quran.com API (Sahih International - resource 131)
+        try {
+          const translationRes = await fetch(
+            `${QURAN_COM_API}/quran/translations/131?chapter_number=${surahNumber}`
+          );
+          const translationData = await translationRes.json();
+          
+          if (translationData.translations) {
+            // Format to match our expected structure
+            const formattedTranslation: SurahDetail = {
+              number: surahNumber,
+              name: arabicData.data?.name || '',
+              englishName: arabicData.data?.englishName || '',
+              englishNameTranslation: arabicData.data?.englishNameTranslation || '',
+              revelationType: arabicData.data?.revelationType || '',
+              numberOfAyahs: translationData.translations.length,
+              ayahs: translationData.translations.map((t: any, index: number) => ({
+                number: t.resource_id,
+                text: t.text.replace(/<[^>]*>/g, ''), // Remove HTML tags
+                numberInSurah: index + 1,
+                juz: 1,
+                manzil: 1,
+                page: 1,
+                ruku: 1,
+                hizbQuarter: 1,
+                sajda: false
+              }))
+            };
+            setTranslation(formattedTranslation);
+          }
+        } catch (translationErr) {
+          // Fallback to alquran.cloud for translation
+          console.warn('Quran.com API failed, falling back to alquran.cloud');
+          const fallbackRes = await fetch(`${API_BASE}/surah/${surahNumber}/en.sahih`);
+          const fallbackData = await fallbackRes.json();
+          if (fallbackData.code === 200) {
+            setTranslation(fallbackData.data);
+          }
         }
+
+        // Fetch transliteration from alquran.cloud
+        const translitRes = await fetch(`${API_BASE}/surah/${surahNumber}/en.transliteration`);
+        const translitData = await translitRes.json();
         if (translitData.code === 200) {
           setTransliteration(translitData.data);
         }
@@ -89,7 +125,7 @@ export function useTafsir(surahNumber: number, ayahNumber: number) {
       try {
         // Using Ibn Kathir tafsir from quran.com API
         const response = await fetch(
-          `https://api.quran.com/api/v4/tafsirs/en-tafisr-ibn-kathir/by_ayah/${surahNumber}:${ayahNumber}`
+          `${QURAN_COM_API}/tafsirs/en-tafisr-ibn-kathir/by_ayah/${surahNumber}:${ayahNumber}`
         );
         const data = await response.json();
         
@@ -129,10 +165,26 @@ export function useSearchQuran(query: string) {
 
       setLoading(true);
       try {
-        const response = await fetch(`${API_BASE}/search/${encodeURIComponent(query)}/all/en`);
+        // Use Quran.com search API
+        const response = await fetch(
+          `${QURAN_COM_API}/search?q=${encodeURIComponent(query)}&size=20&language=en`
+        );
         const data = await response.json();
-        if (data.code === 200) {
-          setResults(data.data.matches || []);
+        
+        if (data.search?.results) {
+          setResults(data.search.results.map((r: any) => ({
+            text: r.text,
+            surah: { number: r.verse_key?.split(':')[0], englishName: '' },
+            numberInSurah: r.verse_key?.split(':')[1],
+            verse_key: r.verse_key
+          })));
+        } else {
+          // Fallback to alquran.cloud
+          const fallbackRes = await fetch(`${API_BASE}/search/${encodeURIComponent(query)}/all/en`);
+          const fallbackData = await fallbackRes.json();
+          if (fallbackData.code === 200) {
+            setResults(fallbackData.data.matches || []);
+          }
         }
       } catch (err) {
         setError('Search failed');
@@ -155,10 +207,17 @@ export function useJuzList() {
   useEffect(() => {
     async function fetchJuzList() {
       try {
-        const response = await fetch(`${API_BASE}/juz`);
+        const response = await fetch(`${QURAN_COM_API}/juzs`);
         const data = await response.json();
-        if (data.code === 200) {
-          setJuzList(data.data);
+        if (data.juzs) {
+          setJuzList(data.juzs);
+        } else {
+          // Fallback
+          const fallbackRes = await fetch(`${API_BASE}/juz`);
+          const fallbackData = await fallbackRes.json();
+          if (fallbackData.code === 200) {
+            setJuzList(fallbackData.data);
+          }
         }
       } catch (err) {
         console.error('Failed to fetch juz list');

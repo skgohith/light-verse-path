@@ -27,7 +27,7 @@ export const HADITH_BOOKS: HadithBook[] = [
   { id: 'ibnmajah', name: 'Sunan Ibn Majah', arabicName: 'سنن ابن ماجه', hadiths: 4341 },
 ];
 
-// Using a free hadith API
+// Using sunnah.com API for both Arabic and English
 const API_BASE = 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1';
 
 export function useHadithBooks() {
@@ -48,38 +48,53 @@ export function useHadiths(bookId: string, page: number = 1, limit: number = 10)
       setError(null);
 
       try {
-        // Fetch from the CDN-based API
-        const response = await fetch(`${API_BASE}/editions/eng-${bookId}.json`);
+        // Fetch both English and Arabic versions
+        const [engResponse, araResponse] = await Promise.all([
+          fetch(`${API_BASE}/editions/eng-${bookId}.json`),
+          fetch(`${API_BASE}/editions/ara-${bookId}.json`)
+        ]);
         
-        if (!response.ok) {
+        if (!engResponse.ok) {
           throw new Error('Failed to fetch hadiths');
         }
 
-        const data = await response.json();
-        const allHadiths = data.hadiths || [];
+        const engData = await engResponse.json();
+        const araData = araResponse.ok ? await araResponse.json() : null;
+        
+        const engHadiths = engData.hadiths || [];
+        const araHadiths = araData?.hadiths || [];
+        
+        // Create a map of Arabic hadiths by hadith number for quick lookup
+        const arabicMap = new Map<string, string>();
+        araHadiths.forEach((h: any) => {
+          const key = h.hadithnumber?.toString() || '';
+          if (key) arabicMap.set(key, h.text || '');
+        });
         
         // Paginate locally
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
-        const paginatedHadiths = allHadiths.slice(startIndex, endIndex);
+        const paginatedHadiths = engHadiths.slice(startIndex, endIndex);
         
-        const formattedHadiths: Hadith[] = paginatedHadiths.map((h: any, index: number) => ({
-          id: startIndex + index + 1,
-          hadithNumber: h.hadithnumber?.toString() || `${startIndex + index + 1}`,
-          englishNarrator: h.grades?.[0]?.name || '',
-          hadithEnglish: h.text || '',
-          hadithArabic: '',
-          bookSlug: bookId,
-          chapterId: h.reference?.book?.toString() || '',
-          grades: h.grades
-        }));
+        const formattedHadiths: Hadith[] = paginatedHadiths.map((h: any, index: number) => {
+          const hadithNum = h.hadithnumber?.toString() || `${startIndex + index + 1}`;
+          return {
+            id: startIndex + index + 1,
+            hadithNumber: hadithNum,
+            englishNarrator: extractNarrator(h.text || ''),
+            hadithEnglish: h.text || '',
+            hadithArabic: arabicMap.get(hadithNum) || '',
+            bookSlug: bookId,
+            chapterId: h.reference?.book?.toString() || '',
+            grades: h.grades
+          };
+        });
 
         setHadiths(formattedHadiths);
-        setHasMore(endIndex < allHadiths.length);
+        setHasMore(endIndex < engHadiths.length);
       } catch (err) {
         console.error('Error fetching hadiths:', err);
         setError('Failed to load hadiths. Please try again.');
-        // Fallback to sample data
         setHadiths(getSampleHadiths(bookId, page, limit));
       } finally {
         setLoading(false);
@@ -92,6 +107,12 @@ export function useHadiths(bookId: string, page: number = 1, limit: number = 10)
   return { hadiths, loading, error, hasMore };
 }
 
+// Extract narrator from hadith text (usually starts with "Narrated...")
+function extractNarrator(text: string): string {
+  const match = text.match(/^(Narrated[^:]+:|It was narrated[^:]+:)/i);
+  return match ? match[1].replace(/:$/, '') : '';
+}
+
 export function useRandomHadith() {
   const [hadith, setHadith] = useState<Hadith | null>(null);
   const [loading, setLoading] = useState(true);
@@ -100,26 +121,39 @@ export function useRandomHadith() {
     async function fetchRandomHadith() {
       try {
         const randomBook = HADITH_BOOKS[Math.floor(Math.random() * 2)]; // Bukhari or Muslim
-        const response = await fetch(`${API_BASE}/editions/eng-${randomBook.id}.json`);
         
-        if (response.ok) {
-          const data = await response.json();
-          const hadiths = data.hadiths || [];
-          const randomIndex = Math.floor(Math.random() * Math.min(hadiths.length, 500));
-          const h = hadiths[randomIndex];
+        const [engResponse, araResponse] = await Promise.all([
+          fetch(`${API_BASE}/editions/eng-${randomBook.id}.json`),
+          fetch(`${API_BASE}/editions/ara-${randomBook.id}.json`)
+        ]);
+        
+        if (engResponse.ok) {
+          const engData = await engResponse.json();
+          const araData = araResponse.ok ? await araResponse.json() : null;
+          
+          const engHadiths = engData.hadiths || [];
+          const araHadiths = araData?.hadiths || [];
+          
+          const randomIndex = Math.floor(Math.random() * Math.min(engHadiths.length, 500));
+          const h = engHadiths[randomIndex];
+          const hadithNum = h.hadithnumber?.toString() || `${randomIndex + 1}`;
+          
+          // Find matching Arabic hadith
+          const arabicHadith = araHadiths.find((ah: any) => 
+            ah.hadithnumber?.toString() === hadithNum
+          );
           
           setHadith({
             id: randomIndex + 1,
-            hadithNumber: h.hadithnumber?.toString() || `${randomIndex + 1}`,
-            englishNarrator: h.grades?.[0]?.name || '',
+            hadithNumber: hadithNum,
+            englishNarrator: extractNarrator(h.text || ''),
             hadithEnglish: h.text || '',
-            hadithArabic: '',
+            hadithArabic: arabicHadith?.text || '',
             bookSlug: randomBook.id,
             chapterId: '',
             grades: h.grades
           });
         } else {
-          // Fallback
           setHadith(getSampleHadiths('bukhari', 1, 1)[0]);
         }
       } catch {
@@ -170,7 +204,7 @@ function getSampleHadiths(bookId: string, page: number, limit: number): Hadith[]
       hadithNumber: "4",
       englishNarrator: "Narrated Abu Musa",
       hadithEnglish: "Some people asked Allah's Messenger (ﷺ), 'Whose Islam is the best?' He replied, 'One who avoids harming the Muslims with his tongue and hands.'",
-      hadithArabic: "",
+      hadithArabic: "سُئِلَ رَسُولُ اللَّهِ ﷺ أَيُّ الإِسْلاَمِ أَفْضَلُ قَالَ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ",
       bookSlug: 'bukhari',
       chapterId: '2'
     },
@@ -188,7 +222,7 @@ function getSampleHadiths(bookId: string, page: number, limit: number): Hadith[]
       hadithNumber: "6",
       englishNarrator: "Narrated Abu Huraira",
       hadithEnglish: "Allah's Messenger (ﷺ) said, 'By Him in Whose Hands my soul is, none of you will have faith till he loves me more than his father and his children.'",
-      hadithArabic: "",
+      hadithArabic: "وَالَّذِي نَفْسِي بِيَدِهِ لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى أَكُونَ أَحَبَّ إِلَيْهِ مِنْ وَالِدِهِ وَوَلَدِهِ",
       bookSlug: 'bukhari',
       chapterId: '2'
     },
@@ -197,7 +231,7 @@ function getSampleHadiths(bookId: string, page: number, limit: number): Hadith[]
       hadithNumber: "7",
       englishNarrator: "Narrated Abu Said Al-Khudri",
       hadithEnglish: "The Prophet (ﷺ) said, 'When the people of Paradise enter Paradise and the people of the Fire enter the Fire, Allah will say, \"Take out of the Fire whoever has faith equal to a mustard seed in his heart.\"'",
-      hadithArabic: "",
+      hadithArabic: "إِذَا دَخَلَ أَهْلُ الْجَنَّةِ الْجَنَّةَ، وَأَهْلُ النَّارِ النَّارَ، يَقُولُ اللَّهُ أَخْرِجُوا مِنَ النَّارِ مَنْ كَانَ فِي قَلْبِهِ مِثْقَالُ حَبَّةٍ مِنْ خَرْدَلٍ مِنْ إِيمَانٍ",
       bookSlug: 'bukhari',
       chapterId: '2'
     },
@@ -206,7 +240,7 @@ function getSampleHadiths(bookId: string, page: number, limit: number): Hadith[]
       hadithNumber: "8",
       englishNarrator: "Narrated Anas",
       hadithEnglish: "The Prophet (ﷺ) said, 'Whoever possesses the following three qualities will taste the sweetness of faith: The one to whom Allah and His Messenger become dearer than anything else.'",
-      hadithArabic: "",
+      hadithArabic: "ثَلاَثٌ مَنْ كُنَّ فِيهِ وَجَدَ حَلاَوَةَ الإِيمَانِ أَنْ يَكُونَ اللَّهُ وَرَسُولُهُ أَحَبَّ إِلَيْهِ مِمَّا سِوَاهُمَا",
       bookSlug: 'bukhari',
       chapterId: '2'
     },
@@ -224,7 +258,7 @@ function getSampleHadiths(bookId: string, page: number, limit: number): Hadith[]
       hadithNumber: "15",
       englishNarrator: "Narrated Abdullah bin Mas'ud",
       hadithEnglish: "The Prophet (ﷺ) said, 'Abusing a Muslim is Fusuq (an evil doing) and killing him is Kufr (disbelief).'",
-      hadithArabic: "",
+      hadithArabic: "سِبَابُ الْمُسْلِمِ فُسُوقٌ، وَقِتَالُهُ كُفْرٌ",
       bookSlug: 'bukhari',
       chapterId: '2'
     }
@@ -251,7 +285,8 @@ export function useSearchHadith(query: string, bookId?: string) {
       const sampleHadiths = getSampleHadiths(bookId || 'bukhari', 1, 10);
       const filtered = sampleHadiths.filter(h => 
         h.hadithEnglish.toLowerCase().includes(query.toLowerCase()) ||
-        h.englishNarrator.toLowerCase().includes(query.toLowerCase())
+        h.englishNarrator.toLowerCase().includes(query.toLowerCase()) ||
+        h.hadithArabic.includes(query)
       );
       setResults(filtered);
       setLoading(false);

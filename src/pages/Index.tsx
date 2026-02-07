@@ -6,7 +6,6 @@ import { MobileNav } from '@/components/MobileNav';
 import { SurahCard } from '@/components/SurahCard';
 import { ContinueReading } from '@/components/ContinueReading';
 import { DailyVerse } from '@/components/DailyVerse';
-import { PrayerTimesCard } from '@/components/PrayerTimesCard';
 import { ReadingStreakCard } from '@/components/ReadingStreakCard';
 import { QuickWidgets } from '@/components/QuickWidgets';
 import { ProgressDashboard } from '@/components/ProgressDashboard';
@@ -26,11 +25,6 @@ const features = [{
   description: 'Listen to reciters',
   path: '/read'
 }, {
-  icon: Clock,
-  title: 'Prayer Times',
-  description: 'Live prayer times',
-  path: '/tools'
-}, {
   icon: Heart,
   title: 'Duas',
   description: 'Daily prayers',
@@ -45,6 +39,11 @@ const features = [{
   title: 'Hadith',
   description: '6 collections',
   path: '/hadith'
+}, {
+  icon: Clock,
+  title: 'Tasbeeh',
+  description: 'Counter',
+  path: '/tasbeeh'
 }];
 export default function Index() {
   const {
@@ -98,7 +97,6 @@ export default function Index() {
                 <ProgressDashboard />
                 <AnalyticsDashboard />
                 <ReadingStreakCard compact />
-                <PrayerTimesCard compact />
                 <ContinueReading />
                 <DailyVerse />
               </div>

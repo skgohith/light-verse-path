@@ -9,6 +9,7 @@ import { useOfflineQuran } from '@/hooks/useOfflineQuran';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { CALCULATION_METHODS } from '@/hooks/usePrayerCalculationMethod';
 import { useNativePushNotifications } from '@/hooks/useNativePushNotifications';
+import { useLocalPrayerNotifications } from '@/hooks/useLocalPrayerNotifications';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -19,7 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Settings, User, LogOut, Bell, Palette, Download, Wifi, WifiOff,
   Star, Bookmark, TrendingUp, ChevronRight, Send, Smartphone,
-  Target, Calculator, CheckCircle2, XCircle
+  Target, Calculator, CheckCircle2, XCircle, Clock
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -66,6 +67,16 @@ export function SettingsSidebar() {
     enableNotifications: enableNativeNotifications,
     disableNotifications: disableNativeNotifications,
   } = useNativePushNotifications();
+
+  const {
+    settings: localPrayerSettings,
+    isNative: isLocalNative,
+    permissionGranted: localPermissionGranted,
+    enableNotifications: enableLocalPrayerNotifications,
+    disableNotifications: disableLocalPrayerNotifications,
+    togglePrayer: toggleLocalPrayer,
+    setMinutesBefore: setLocalMinutesBefore,
+  } = useLocalPrayerNotifications();
 
   const {
     settings: verseSettings,
@@ -223,7 +234,7 @@ export function SettingsSidebar() {
                   <div className="flex items-center gap-2">
                     <span className="text-sm">Push Notifications</span>
                     {nativeSettings.enabled ? (
-                      <Badge variant="outline" className="text-green-500 border-green-500/50 gap-1">
+                      <Badge variant="outline" className="text-primary border-primary/50 gap-1">
                         <CheckCircle2 className="w-3 h-3" /> Enabled
                       </Badge>
                     ) : (
@@ -277,6 +288,89 @@ export function SettingsSidebar() {
           </div>
 
           <Separator />
+
+          {/* Local Prayer Notifications (Native Only) */}
+          {isLocalNative && (
+            <>
+              <div className="space-y-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase flex items-center gap-2">
+                  <Clock className="w-4 h-4" /> Prayer Alerts
+                </p>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">Prayer Time Alerts</span>
+                    {localPrayerSettings.enabled ? (
+                      <Badge variant="outline" className="text-primary border-primary/50 gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> On
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-muted-foreground gap-1">
+                        <XCircle className="w-3 h-3" /> Off
+                      </Badge>
+                    )}
+                  </div>
+                  <Switch
+                    checked={localPrayerSettings.enabled}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        enableLocalPrayerNotifications().then((success) => {
+                          if (success) {
+                            toast.success('Prayer alerts enabled');
+                          } else {
+                            toast.error('Permission denied for notifications');
+                          }
+                        });
+                      } else {
+                        disableLocalPrayerNotifications();
+                        toast.info('Prayer alerts disabled');
+                      }
+                    }}
+                  />
+                </div>
+
+                {localPrayerSettings.enabled && (
+                  <>
+                    <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground">Notify before prayer:</p>
+                      <Select 
+                        value={localPrayerSettings.minutesBefore.toString()} 
+                        onValueChange={(v) => setLocalMinutesBefore(parseInt(v))}
+                      >
+                        <SelectTrigger className="h-8">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="5">5 minutes</SelectItem>
+                          <SelectItem value="10">10 minutes</SelectItem>
+                          <SelectItem value="15">15 minutes</SelectItem>
+                          <SelectItem value="30">30 minutes</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      {(['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const).map((prayer) => (
+                        <div key={prayer} className="flex items-center justify-between">
+                          <span className="text-sm">{prayer}</span>
+                          <Switch
+                            checked={localPrayerSettings.prayers[prayer]}
+                            onCheckedChange={() => toggleLocalPrayer(prayer)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                <p className="text-xs text-muted-foreground">
+                  Get notified before each prayer time directly on your device
+                </p>
+              </div>
+
+              <Separator />
+            </>
+          )}
 
           {/* Prayer Notifications */}
           <div className="space-y-3">
@@ -450,7 +544,7 @@ export function SettingsSidebar() {
             
             {hasOfflineData ? (
               <div className="space-y-2">
-                <p className="text-sm text-green-500 flex items-center gap-2">
+                <p className="text-sm text-primary flex items-center gap-2">
                   <Download className="w-4 h-4" />
                   {offlineData.surahs.length} surahs available offline
                 </p>

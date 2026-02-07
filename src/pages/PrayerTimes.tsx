@@ -1,61 +1,43 @@
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { PrayerTimesCard } from '@/components/PrayerTimesCard';
-import { PrayerCountdown } from '@/components/PrayerCountdown';
 import { HijriCalendar } from '@/components/HijriCalendar';
 import { NamesOfAllahGrid } from '@/components/NamesOfAllahGrid';
 import { DuasSection } from '@/components/DuasSection';
-import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Clock, Calendar, Sparkles, BookOpen, ArrowRight } from 'lucide-react';
+import { Calendar, Sparkles, BookOpen, ArrowRight } from 'lucide-react';
 
 export default function PrayerTimesPage() {
-  const { nextPrayer } = usePrayerTimes();
   return <div className="min-h-screen bg-background dark">
       <Header />
       <main className="py-8 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 font-serif">Tools</h1>
-            <p className="text-muted-foreground">Prayer times, calendar, and more</p>
+            <p className="text-muted-foreground">Calendar, Duas, and more</p>
           </div>
 
-          <Tabs defaultValue="prayer" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-8">
-              <TabsTrigger value="prayer" className="gap-2"><Clock className="w-4 h-4" /><span className="hidden sm:inline">Prayer</span></TabsTrigger>
+          <Tabs defaultValue="calendar" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-8">
               <TabsTrigger value="calendar" className="gap-2"><Calendar className="w-4 h-4" /><span className="hidden sm:inline">Calendar</span></TabsTrigger>
               <TabsTrigger value="names" className="gap-2"><Sparkles className="w-4 h-4" /><span className="hidden sm:inline">99 Names</span></TabsTrigger>
               <TabsTrigger value="duas" className="gap-2"><BookOpen className="w-4 h-4" /><span className="hidden sm:inline">Duas</span></TabsTrigger>
             </TabsList>
 
-            <TabsContent value="prayer">
+            <TabsContent value="calendar">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="space-y-6">
-                  <PrayerCountdown nextPrayer={nextPrayer} />
-                  <PrayerTimesCard />
-                </div>
+                <HijriCalendar />
                 <div className="space-y-6">
                   <div className="bg-card border border-border rounded-xl p-6">
-                    <h3 className="font-semibold text-foreground mb-4">About Prayer Times</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">Prayer times are calculated based on your location. The five daily prayers are Fajr (dawn), Dhuhr (midday), Asr (afternoon), Maghrib (sunset), and Isha (night).</p>
+                    <h3 className="font-semibold text-foreground mb-4">About Islamic Calendar</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      The Islamic calendar (Hijri) is a lunar calendar with 12 months. It began in 622 CE when Prophet Muhammad ﷺ migrated from Mecca to Medina.
+                    </p>
                   </div>
                   <Link to="/read">
                     <Button className="w-full gap-2">Read Quran <ArrowRight className="w-4 h-4" /></Button>
                   </Link>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="calendar">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <HijriCalendar />
-                <div className="bg-card border border-border rounded-xl p-6">
-                  <h3 className="font-semibold text-foreground mb-4">About Islamic Calendar</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    The Islamic calendar (Hijri) is a lunar calendar with 12 months. It began in 622 CE when Prophet Muhammad ﷺ migrated from Mecca to Medina.
-                  </p>
                 </div>
               </div>
             </TabsContent>

@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Star, Clock, BookOpen, BookMarked, TrendingUp, Heart } from 'lucide-react';
-import { usePrayerTimes } from '@/hooks/usePrayerTimes';
+import { Star, BookOpen, BookMarked, Heart, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface QuickWidget {
@@ -13,26 +12,7 @@ interface QuickWidget {
 }
 
 export function QuickWidgets() {
-  const { prayerTimes, nextPrayer } = usePrayerTimes();
-
   const widgets: QuickWidget[] = [
-    {
-      id: 'prayer',
-      title: 'Next Prayer',
-      icon: Clock,
-      path: '/tools',
-      gradient: 'from-emerald-500/20 to-emerald-600/10',
-      content: nextPrayer ? (
-        <div className="mt-1">
-          <p className="text-lg font-bold text-foreground">{nextPrayer.name}</p>
-          <p className="text-xs text-muted-foreground">
-            {nextPrayer.time} • {nextPrayer.remaining}
-          </p>
-        </div>
-      ) : (
-        <p className="text-xs text-muted-foreground mt-1">Loading...</p>
-      ),
-    },
     {
       id: 'tasbeeh',
       title: 'Tasbeeh',
@@ -67,10 +47,20 @@ export function QuickWidgets() {
       id: 'duas',
       title: 'Duas',
       icon: Heart,
-      path: '/memorization',
+      path: '/tools',
       gradient: 'from-pink-500/20 to-pink-600/10',
       content: (
         <p className="text-xs text-muted-foreground mt-1">Daily prayers</p>
+      ),
+    },
+    {
+      id: 'calendar',
+      title: 'Calendar',
+      icon: Calendar,
+      path: '/tools',
+      gradient: 'from-emerald-500/20 to-emerald-600/10',
+      content: (
+        <p className="text-xs text-muted-foreground mt-1">Hijri dates</p>
       ),
     },
   ];

@@ -170,6 +170,10 @@ export default function SurahDetail() {
                 if (translationLang === 'romanUrdu' && romanUrduVerse) {
                   return romanUrduVerse.translation;
                 }
+                // Use English from local JSON if available, fallback to API
+                if (romanUrduVerse?.engTranslation) {
+                  return romanUrduVerse.engTranslation;
+                }
                 return translationAyah?.text || '';
               };
 

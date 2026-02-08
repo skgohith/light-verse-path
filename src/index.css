@@ -111,6 +111,51 @@
     --sidebar-primary: 35 80% 50%;
     --sidebar-ring: 35 80% 50%;
   }
+
+  /* Purple Night Theme */
+  .dark.theme-purple {
+    --primary: 270 60% 55%;
+    --accent: 270 60% 55%;
+    --ring: 270 60% 55%;
+    --sidebar-primary: 270 60% 55%;
+    --sidebar-ring: 270 60% 55%;
+  }
+
+  /* Rose Garden Theme */
+  .dark.theme-rose {
+    --primary: 340 65% 55%;
+    --accent: 340 65% 55%;
+    --ring: 340 65% 55%;
+    --sidebar-primary: 340 65% 55%;
+    --sidebar-ring: 340 65% 55%;
+  }
+
+  /* Midnight Theme */
+  .dark.theme-midnight {
+    --primary: 230 50% 50%;
+    --accent: 230 50% 50%;
+    --ring: 230 50% 50%;
+    --sidebar-primary: 230 50% 50%;
+    --sidebar-ring: 230 50% 50%;
+  }
+
+  /* Sage Theme */
+  .dark.theme-sage {
+    --primary: 140 30% 50%;
+    --accent: 140 30% 50%;
+    --ring: 140 30% 50%;
+    --sidebar-primary: 140 30% 50%;
+    --sidebar-ring: 140 30% 50%;
+  }
+
+  /* Coral Theme */
+  .dark.theme-coral {
+    --primary: 15 75% 55%;
+    --accent: 15 75% 55%;
+    --ring: 15 75% 55%;
+    --sidebar-primary: 15 75% 55%;
+    --sidebar-ring: 15 75% 55%;
+  }
 }
 
 @layer base {

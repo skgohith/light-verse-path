@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'dark' | 'light' | 'emerald' | 'ocean' | 'sunset';
+type Theme = 'dark' | 'light' | 'emerald' | 'ocean' | 'sunset' | 'purple' | 'rose' | 'midnight' | 'sage' | 'coral';
 
 interface ThemeContextType {
   theme: Theme;
@@ -15,6 +15,11 @@ export const THEMES: { id: Theme; name: string; primary: string }[] = [
   { id: 'emerald', name: 'Emerald Night', primary: 'hsl(160, 60%, 40%)' },
   { id: 'ocean', name: 'Ocean Blue', primary: 'hsl(210, 60%, 50%)' },
   { id: 'sunset', name: 'Sunset Gold', primary: 'hsl(35, 80%, 50%)' },
+  { id: 'purple', name: 'Purple Night', primary: 'hsl(270, 60%, 55%)' },
+  { id: 'rose', name: 'Rose Garden', primary: 'hsl(340, 65%, 55%)' },
+  { id: 'midnight', name: 'Midnight', primary: 'hsl(230, 50%, 50%)' },
+  { id: 'sage', name: 'Sage', primary: 'hsl(140, 30%, 50%)' },
+  { id: 'coral', name: 'Coral', primary: 'hsl(15, 75%, 55%)' },
 ];
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

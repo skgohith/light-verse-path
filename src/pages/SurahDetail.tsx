@@ -25,6 +25,11 @@ export default function SurahDetail() {
   const [showTransliteration, setShowTransliteration] = useState(true);
   const [translationLang, setTranslationLang] = useState<'english' | 'romanUrdu'>('romanUrdu');
 
+  // Scroll to top when surah changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [number]);
+
   useEffect(() => {
     if (surah) {
       updateProgress(number, currentAyah);

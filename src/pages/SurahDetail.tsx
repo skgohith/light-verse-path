@@ -10,7 +10,7 @@ import { useReadingProgress, useBookmarks } from '@/hooks/useLocalStorage';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronLeft, ChevronRight, Bookmark, Share2, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Bookmark, Share2, Settings, Play, Pause } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function SurahDetail() {
@@ -24,6 +24,8 @@ export default function SurahDetail() {
   const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg'>('md');
   const [showTransliteration, setShowTransliteration] = useState(true);
   const [translationLang, setTranslationLang] = useState<'english' | 'romanUrdu'>('romanUrdu');
+  const [playingAyah, setPlayingAyah] = useState<number | null>(null);
+  const [audioRef, setAudioRef] = useState<HTMLAudioElement | null>(null);
 
   // Scroll to top when surah changes
   useEffect(() => {
@@ -43,6 +45,37 @@ export default function SurahDetail() {
     } else {
       addBookmark(number, ayahNumber, surah?.englishName || '', ayahText);
     }
+  };
+
+  const playAyahAudio = (ayahNumber: number) => {
+    // Stop current audio if playing
+    if (audioRef) {
+      audioRef.pause();
+      audioRef.currentTime = 0;
+    }
+
+    if (playingAyah === ayahNumber) {
+      setPlayingAyah(null);
+      return;
+    }
+
+    // Format: https://cdn.islamic.network/quran/audio/128/ar.alafasy/{globalAyahNumber}.mp3
+    // We need to calculate global ayah number
+    const globalAyahNumber = surah?.ayahs.find(a => a.numberInSurah === ayahNumber)?.number;
+    if (!globalAyahNumber) return;
+
+    const audio = new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${globalAyahNumber}.mp3`);
+    setAudioRef(audio);
+    setPlayingAyah(ayahNumber);
+    setCurrentAyah(ayahNumber);
+
+    audio.play();
+    audio.onended = () => {
+      setPlayingAyah(null);
+    };
+    audio.onerror = () => {
+      setPlayingAyah(null);
+    };
   };
 
   const fontSizeClasses = {
@@ -198,6 +231,14 @@ export default function SurahDetail() {
                       <span className="text-xs text-muted-foreground">Juz {romanUrduVerse?.juz || ayah.juz} • Page {ayah.page}</span>
                     </div>
                     <div className="flex items-center gap-1">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => playAyahAudio(ayah.numberInSurah)}
+                        className={cn(playingAyah === ayah.numberInSurah ? 'text-primary bg-primary/10' : 'text-muted-foreground')}
+                      >
+                        {playingAyah === ayah.numberInSurah ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                      </Button>
                       <Button variant="ghost" size="icon" onClick={() => handleBookmark(ayah.numberInSurah, getTranslationText())} className={cn(bookmarked ? 'text-primary' : 'text-muted-foreground')}>
                         <Bookmark className="w-4 h-4" fill={bookmarked ? 'currentColor' : 'none'} />
                       </Button>

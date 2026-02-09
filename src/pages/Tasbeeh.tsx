@@ -28,6 +28,16 @@ const DEFAULT_DHIKRS = [
   { name: 'Allahu Akbar', arabic: 'اللَّهُ أَكْبَرُ', target: 33 },
   { name: 'La ilaha illallah', arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ', target: 100 },
   { name: 'Astaghfirullah', arabic: 'أَسْتَغْفِرُ اللَّهَ', target: 100 },
+  { name: 'SubhanAllahi wa bihamdihi', arabic: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ', target: 100 },
+  { name: 'SubhanAllahil Azeem', arabic: 'سُبْحَانَ اللَّهِ الْعَظِيمِ', target: 100 },
+  { name: 'La hawla wa la quwwata illa billah', arabic: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ', target: 100 },
+  { name: 'Hasbunallahu wa ni\'mal wakeel', arabic: 'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ', target: 100 },
+  { name: 'Subhanallahi walhamdulillahi', arabic: 'سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَٰهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ', target: 33 },
+  { name: 'Allahumma salli ala Muhammad', arabic: 'اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ', target: 100 },
+  { name: 'La ilaha illallahu wahdahu', arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ', target: 100 },
+  { name: 'Rabbighfirli', arabic: 'رَبِّ اغْفِرْ لِي', target: 100 },
+  { name: 'Ya Hayyu Ya Qayyum', arabic: 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ', target: 33 },
+  { name: 'Rabbana atina fid-dunya', arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', target: 33 },
 ];
 
 export default function Tasbeeh() {

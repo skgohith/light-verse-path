@@ -32,11 +32,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('app-theme', theme);
     
     // Remove all theme classes
-    document.documentElement.classList.remove('dark', 'light', 'theme-emerald', 'theme-ocean', 'theme-sunset');
+    const allThemeClasses = ['dark', 'light', 'theme-emerald', 'theme-ocean', 'theme-sunset', 'theme-purple', 'theme-rose', 'theme-midnight', 'theme-sage', 'theme-coral'];
+    document.documentElement.classList.remove(...allThemeClasses);
     
     // Apply theme
     if (theme === 'light') {
-      document.documentElement.classList.remove('dark');
+      // light mode — no dark class
     } else {
       document.documentElement.classList.add('dark');
       if (theme !== 'dark') {

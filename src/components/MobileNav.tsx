@@ -1,12 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, BookOpen, GraduationCap, Clock, User } from 'lucide-react';
+import { Home, BookOpen, Sparkles, Clock, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 
 const navItems = [
   { path: '/', icon: Home, label: 'Home' },
   { path: '/read', icon: BookOpen, label: 'Quran' },
-  { path: '/learn', icon: GraduationCap, label: 'Learn' },
+  { path: '/daily', icon: Sparkles, label: 'Daily' },
   { path: '/tools', icon: Clock, label: 'Tools' },
   { path: '/profile', icon: User, label: 'Profile' },
 ];

@@ -51,7 +51,7 @@ export function useSurahDetail(surahNumber: number) {
           setSurah(arabicData.data);
         }
 
-        // Fetch English translation from Quran.com API (Sahih International - resource 131)
+        // Fetch English translation from Quran.com API (Dr. Mustafa Khattab, The Clear Quran - resource 131)
         try {
           const translationRes = await fetch(
             `${QURAN_COM_API}/quran/translations/131?chapter_number=${surahNumber}`
@@ -84,7 +84,7 @@ export function useSurahDetail(surahNumber: number) {
         } catch (translationErr) {
           // Fallback to alquran.cloud for translation
           console.warn('Quran.com API failed, falling back to alquran.cloud');
-          const fallbackRes = await fetch(`${API_BASE}/surah/${surahNumber}/en.sahih`);
+          const fallbackRes = await fetch(`${API_BASE}/surah/${surahNumber}/en.hilali`);
           const fallbackData = await fallbackRes.json();
           if (fallbackData.code === 200) {
             setTranslation(fallbackData.data);

@@ -22,6 +22,7 @@ import Profile from "./pages/Profile";
 import Tasbeeh from "./pages/Tasbeeh";
 import Memorization from "./pages/Memorization";
 import Hadith from "./pages/Hadith";
+import Daily from "./pages/Daily";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -82,6 +83,7 @@ const App = () => {
                   <Route path="/tasbeeh" element={<Tasbeeh />} />
                   <Route path="/memorization" element={<Memorization />} />
                   <Route path="/hadith" element={<Hadith />} />
+                  <Route path="/daily" element={<Daily />} />
                   <Route path="/hadith/:bookId" element={<Hadith />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
